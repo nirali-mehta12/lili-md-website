@@ -43,9 +43,11 @@ function initApp(): App | null {
     });
   }
 
-  // App Hosting / GCP → Application Default Credentials.
+  // App Hosting / GCP / local `gcloud auth application-default login`
+  // → keyless Application Default Credentials. Pass projectId so the
+  //   SDK targets the right project even with user-based ADC.
   if (projectId || process.env.GOOGLE_CLOUD_PROJECT) {
-    return initializeApp();
+    return initializeApp(projectId ? { projectId } : undefined);
   }
 
   // Nothing configured → placeholder mode.

@@ -20,16 +20,29 @@
 ### ✅ Done
 - Full responsive one-page site, all 13 sections, matches the Canva layout.
 - Submit form → `/api/submit`: validation, spam protection (honeypot + rate limit),
-  Firestore lead storage, email-on-submit. **Runs in "placeholder mode"** today
-  (logs the lead, returns success) so it works locally with no Firebase yet.
+  Firestore lead storage, email-on-submit.
 - Design tokens, fonts, and every image are **placeholders**, built to be swapped.
 - Production build passes; committed and pushed to the private repo.
-- Firestore config files written (`firestore.rules`, `firestore.indexes.json`, `firebase.json`).
+- **Firebase project `lili-md-website` created.**
+- **Firestore database live** (`(default)`, nam5, Native) + **security rules deployed**
+  (locked: no public access; only the server's Admin SDK writes).
+- **`.env.local` set to keyless ADC mode** (`FIREBASE_PROJECT_ID`, `GOOGLE_CLOUD_PROJECT`).
+  NOTE: the `lilisolutions.ai` org policy blocks downloadable service-account keys,
+  so we authenticate with **Application Default Credentials (keyless)**, not a key file.
 
-### ⏳ Next steps (in order)
-1. **Get Canva assets** from the designer → swap placeholders (see "Swapping in designer assets").
-2. **Finish Firebase setup** → flip the form from placeholder mode to live (see "Firebase & Google Cloud setup").
-3. **Deploy** to Firebase App Hosting + connect the domain (see "Deploy").
+### ⏳ Next steps (in order) — RESUME HERE
+1. **Verify local keyless auth.** The user just ran `gcloud auth application-default login`
+   (account: nirali@lilisolutions.ai). Confirm it worked: restart `npm run dev`, submit a
+   test form (or POST to `/api/submit`), and check a doc appears in Firestore `leads`.
+   - If the API logs `(placeholder mode)`, env isn't loaded → ensure `.env.local` exists and dev was restarted.
+   - If it 500s with an auth/permission error → ADC isn't set; re-run `gcloud auth application-default login`,
+     and if needed `gcloud auth application-default set-quota-project lili-md-website`.
+2. **Swap in Canva assets.** Design PDF is in the project dir; images are in the `assets/` folder.
+   Apply exact colors/gradient/fonts (globals.css + layout.tsx) and replace every
+   `<Placeholder/>` with the real image (see "Swapping in designer assets").
+3. **Email sending:** enable Blaze plan → SendGrid account + API key → install the
+   `firebase/firestore-send-email` extension watching the `mail` collection.
+4. **Deploy** to Firebase App Hosting + connect the domain.
 
 > Whoever picks this up: read this file top to bottom, then run `npm run dev` and
 > open http://localhost:3000 to see the current state.
@@ -97,9 +110,13 @@ terminal, not a non-interactive tool shell. Config files are written by hand her
 5. **Trigger Email extension + SendGrid:** create a free SendGrid account + API key,
    then install the `firebase/firestore-send-email` extension configured to watch the
    `mail` collection using the SendGrid SMTP credentials.
-6. **Service account → `.env.local`:** Firebase console → Project settings → Service
-   accounts → Generate new private key. Put `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`,
-   `FIREBASE_PRIVATE_KEY` in `.env.local` (see `.env.example`). The form then goes live.
+6. **Auth = keyless (ADC).** The org blocks downloadable service-account keys, so:
+   - **Local:** `gcloud auth application-default login` once; `.env.local` just needs
+     `FIREBASE_PROJECT_ID` + `GOOGLE_CLOUD_PROJECT` (already set). The Admin SDK in
+     `src/lib/firebase.ts` falls through to `initializeApp({ projectId })` → uses ADC.
+   - **App Hosting (prod):** ADC is automatic from the runtime service account — nothing to set.
+   - (The `FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` path in the code still works if
+     keys are ever allowed, but is unused here.)
 7. **Test:** submit the form locally → a `leads` doc appears in Firestore and an email
    arrives at `admin@lilisolutions.ai`.
 

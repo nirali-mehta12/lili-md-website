@@ -1,26 +1,95 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  ============================================================
+  LiLi M.D. — Design Tokens (PLACEHOLDERS)
+  ------------------------------------------------------------
+  Replace the values below with the EXACT ones from the Canva
+  designer (hex codes, gradient stops, font names). Every
+  section references these tokens, so editing here re-skins
+  the whole site.
+  ============================================================
+*/
+
+@theme {
+  /* --- Brand colors (PLACEHOLDER hex — swap for exact Canva values) --- */
+  --color-maroon-950: #25121a; /* darkest wine */
+  --color-maroon-900: #3a1c28; /* main page background */
+  --color-maroon-800: #4d2735; /* cards / panels */
+  --color-maroon-700: #5e3142; /* borders / hover */
+  --color-maroon-600: #714052; /* lighter accent */
+
+  --color-gold: #c9a24b; /* primary gold */
+  --color-gold-light: #e9d7a2; /* champagne highlight */
+  --color-gold-dark: #9c7635; /* deep gold */
+
+  --color-cream: #f3ebdd; /* primary text on dark */
+  --color-cream-muted: #c4a9b1; /* secondary / muted text */
+
+  /* --- Fonts (PLACEHOLDER — wired in layout.tsx; swap when confirmed) --- */
+  --font-serif: var(--font-heading), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-body), system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* --- Page base --- */
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-maroon-900);
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+  Gold gradient — used on the "Work Less. Earn More." card and gold accents.
+  PLACEHOLDER stops — replace with exact Canva gradient (start/end + angle).
+*/
+.gradient-gold {
+  background: linear-gradient(
+    135deg,
+    var(--color-gold-light) 0%,
+    var(--color-gold) 45%,
+    var(--color-gold-dark) 100%
+  );
+}
+
+.text-gradient-gold {
+  background: linear-gradient(
+    135deg,
+    var(--color-gold-light) 0%,
+    var(--color-gold) 60%,
+    var(--color-gold-dark) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Thin gold divider used between sections */
+.rule-gold {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-gold) 50%,
+    transparent
+  );
+}
+
+/* --- Scroll-reveal animation (driven by <Reveal/>) --- */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.7s ease-out,
+      transform 0.7s ease-out;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

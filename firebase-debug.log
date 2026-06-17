@@ -1,0 +1,13 @@
+[debug] [2026-06-17T18:48:13.651Z] ----------------------------------------------------------------------
+[debug] [2026-06-17T18:48:13.652Z] Command:       /opt/homebrew/Cellar/node@22/22.22.2_2/bin/node /Users/niralimehta/.npm/_npx/ba4f1959e38407b5/node_modules/.bin/firebase login --reauth
+[debug] [2026-06-17T18:48:13.653Z] CLI Version:   15.20.0
+[debug] [2026-06-17T18:48:13.653Z] Platform:      darwin
+[debug] [2026-06-17T18:48:13.653Z] Node Version:  v22.22.2
+[debug] [2026-06-17T18:48:13.653Z] Time:          Wed Jun 17 2026 11:48:13 GMT-0700 (Pacific Daylight Time)
+[debug] [2026-06-17T18:48:13.653Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+[info] Visit this URL on this device to log in:
+[info] https://accounts.google.com/o/oauth2/auth?client_id=563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com&scope=email%20openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloudplatformprojects.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Ffirebase%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform&response_type=code&state=302317778&redirect_uri=http%3A%2F%2Flocalhost%3A9005&login_hint=nirali%40lilisolutions.ai
+[info] 
+[info] Waiting for authentication...

@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 
 /*
-  Scroll-reveal wrapper: fades + slides its children in when they
-  enter the viewport. Respects prefers-reduced-motion (handled in
-  globals.css). Pass `delay` (ms) to stagger items in a row.
+  Scroll/load reveal: fades + rises its children in when they enter the
+  viewport (and on load for above-the-fold content). `delay` (ms) staggers
+  items. Respects prefers-reduced-motion (handled in globals.css).
 */
 export function Reveal({
   children,

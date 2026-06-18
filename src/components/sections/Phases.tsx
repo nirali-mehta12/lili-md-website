@@ -1,35 +1,52 @@
-import { Section, SectionHeading } from "../ui/Section";
 import { Reveal } from "../ui/Reveal";
 import { phases } from "@/lib/content";
 
 export function Phases() {
   return (
-    <Section>
-      <SectionHeading>{phases.heading}</SectionHeading>
-      <Reveal>
-        <p className="mx-auto mt-6 max-w-2xl text-center text-cream-muted">
-          {phases.subheading}
-        </p>
-      </Reveal>
+    <section className="px-6 py-10 sm:px-8 sm:py-14">
+      <div className="mx-auto w-full max-w-5xl">
+        {/* Heading: "The Three-Phase" (white, flanked by gold lines) + "Practice Journey" (gold) */}
+        <Reveal>
+          <div className="flex items-center justify-center gap-5 sm:gap-8">
+            <span className="hidden h-px flex-1 bg-gold/55 sm:block" />
+            <h2 className="whitespace-nowrap font-serif text-3xl leading-none tracking-tight text-white sm:text-4xl md:text-5xl">
+              {phases.heading.line1}
+            </h2>
+            <span className="hidden h-px flex-1 bg-gold/55 sm:block" />
+          </div>
+          <h2 className="mt-1 text-center font-serif text-3xl leading-tight tracking-tight text-gold sm:text-4xl md:text-5xl">
+            {phases.heading.line2}
+          </h2>
+          <p className="mx-auto mt-5 max-w-md text-center text-sm leading-relaxed text-gold">
+            {phases.subheading}
+          </p>
+        </Reveal>
 
-      <div className="mt-14 grid gap-6 md:grid-cols-3">
-        {phases.items.map((phase, i) => (
-          <Reveal key={phase.number} delay={i * 120}>
-            <div className="flex h-full flex-col rounded-2xl border border-white/10 bg-maroon-800/40 p-8 transition-all duration-300 hover:-translate-y-1 hover:border-gold/40">
-              <span className="font-serif text-5xl text-gold/60">
-                {phase.number}
-              </span>
-              <p className="mt-4 text-xs font-medium uppercase tracking-widest text-gold">
-                {phase.label}
-              </p>
-              <p className="mt-1 font-serif text-xl text-cream">{phase.rate}</p>
-              <p className="mt-4 text-sm leading-relaxed text-cream-muted">
-                {phase.body}
-              </p>
-            </div>
-          </Reveal>
-        ))}
+        {/* 3 columns + a top rule. Vertical dividers are centered and inset,
+            so they float in the middle without touching the horizontal rule. */}
+        <div className="mt-12 grid border-t border-gold/45 sm:mt-14 md:grid-cols-3">
+          {phases.items.map((item, i) => (
+            <Reveal key={item.number} delay={i * 110} className="relative">
+              {i > 0 && (
+                <span className="absolute inset-y-7 left-0 hidden w-px bg-gold/45 md:block" />
+              )}
+              <div className="h-full px-1 pt-8 md:px-8">
+                <div className="flex items-baseline gap-3">
+                  <span className="font-serif text-4xl leading-none text-white sm:text-5xl">
+                    {item.number}
+                  </span>
+                  <span className="text-sm font-medium text-white">
+                    {item.rate}
+                  </span>
+                </div>
+                <p className="mt-5 text-sm leading-relaxed text-gold">
+                  {item.body}
+                </p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
       </div>
-    </Section>
+    </section>
   );
 }

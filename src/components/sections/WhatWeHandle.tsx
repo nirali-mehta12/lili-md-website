@@ -1,36 +1,41 @@
-import { Section } from "../ui/Section";
-import { Placeholder } from "../ui/Placeholder";
+import Image from "next/image";
 import { Reveal } from "../ui/Reveal";
-import { Button } from "../ui/Button";
 import { whatWeHandle } from "@/lib/content";
 
 export function WhatWeHandle() {
   return (
-    <Section>
-      <div className="grid items-center gap-12 md:grid-cols-2">
-        {/* 3D isometric cube / server illustration */}
-        <Reveal className="order-2 md:order-1">
-          <Placeholder
-            label="3D cube illustration"
-            className="aspect-square w-full max-w-md"
+    <section className="px-6 py-10 sm:px-8 sm:py-14">
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-10 md:grid-cols-2 lg:gap-16">
+        {/* Left — AI graphic on its own warm rounded panel (baked into the asset) */}
+        <Reveal>
+          <Image
+            src="/ai-graphic.png"
+            alt="LiLi M.D. AI intelligence layer over your practice's data foundation"
+            width={1372}
+            height={1208}
+            className="h-auto w-full rounded-[28px] shadow-2xl shadow-black/40"
+            priority={false}
           />
         </Reveal>
 
-        <Reveal className="order-1 md:order-2" delay={100}>
-          <h2 className="font-serif text-3xl tracking-tight text-cream sm:text-4xl">
-            {whatWeHandle.heading}
-          </h2>
-          <div className="rule-gold mt-6 w-24" />
-          <p className="mt-6 leading-relaxed text-cream-muted">
-            {whatWeHandle.body}
-          </p>
-          <div className="mt-8">
-            <Button href="#submit" variant="outline">
+        {/* Right — heading, body, CTA */}
+        <Reveal delay={120}>
+          <div className="text-center md:text-left">
+            <h2 className="font-serif text-3xl leading-tight tracking-tight text-gold sm:text-4xl">
+              {whatWeHandle.heading}
+            </h2>
+            <p className="mx-auto mt-6 max-w-[25rem] text-[15px] leading-relaxed text-white/90 md:mx-0">
+              {whatWeHandle.body}
+            </p>
+            <a
+              href="#contact"
+              className="mt-8 inline-flex items-center justify-center rounded-md bg-gold px-7 py-2.5 text-xs font-semibold uppercase tracking-widest text-wine-950 transition-colors hover:bg-gold-light"
+            >
               {whatWeHandle.cta}
-            </Button>
+            </a>
           </div>
         </Reveal>
       </div>
-    </Section>
+    </section>
   );
 }

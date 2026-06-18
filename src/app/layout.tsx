@@ -1,21 +1,28 @@
 import type { Metadata } from "next";
-// PLACEHOLDER FONTS — swap these two imports for the exact Canva fonts later.
-//  - Heading: an elegant serif (placeholder: Playfair Display)
-//  - Body:    a clean sans-serif (placeholder: Inter)
-// If the real fonts aren't on Google Fonts, we switch to next/font/local
-// and drop the .woff2 files in src/app/fonts/. Only this file changes.
-import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
+import { Playfair_Display, Lora, Jost, Poppins } from "next/font/google";
+import { cn } from "@/lib/utils";
 
-const heading = Playfair_Display({
-  variable: "--font-heading",
+// Fonts from the V5 design.
+const playfair = Playfair_Display({
   subsets: ["latin"],
+  variable: "--font-playfair",
   display: "swap",
 });
-
-const body = Inter({
-  variable: "--font-body",
+const lora = Lora({
   subsets: ["latin"],
+  variable: "--font-lora",
+  display: "swap",
+});
+const jost = Jost({
+  subsets: ["latin"],
+  variable: "--font-jost",
+  display: "swap",
+});
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-poppins",
   display: "swap",
 });
 
@@ -33,9 +40,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${heading.variable} ${body.variable} h-full antialiased`}
+      className={cn(
+        playfair.variable,
+        lora.variable,
+        jost.variable,
+        poppins.variable,
+        "font-sans antialiased",
+      )}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

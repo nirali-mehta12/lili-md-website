@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getDb } from "@/lib/firebase";
+import { sendLeadNotification } from "@/lib/email";
 
 /*
   POST /api/submit  — handles the "Submit Your Practice" form.
@@ -8,19 +9,17 @@ import { getDb } from "@/lib/firebase";
     1. Honeypot check (invisible "company" field) — reject bots silently.
     2. Lightweight per-IP rate limit.
     3. Validate name + email.
-    4. Store the lead in Firestore `leads`.
-    5. Queue an email to admin@lilisolutions.ai via the Firestore
-       "Trigger Email" extension (writes a doc to the `mail` collection).
+    4. Store the lead in Firestore `leads` (durable record).
+    5. Email the notification directly via SMTP (best-effort).
 
-  Until Firebase env vars are set, this runs in "placeholder mode":
-  it logs the lead and returns success so the form is testable locally.
+  Lead storage and email are independent: a lead is never lost because
+  email failed. With neither Firestore nor SMTP configured, the route
+  runs in "placeholder mode" (logs the lead, returns success) so the
+  form is testable locally.
 */
 
 // This handler must run per-request (never statically cached).
 export const dynamic = "force-dynamic";
-
-const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || "admin@lilisolutions.ai";
-const MAIL_COLLECTION = process.env.MAIL_COLLECTION || "mail";
 
 // --- Simple in-memory rate limit (per server instance) ---
 // Good enough for a low-volume, semi-private form. For multi-instance
@@ -39,14 +38,6 @@ function isRateLimited(ip: string): boolean {
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }
 
 export async function POST(request: NextRequest) {
@@ -103,41 +94,38 @@ export async function POST(request: NextRequest) {
   };
 
   const db = getDb();
+  const smtpConfigured = Boolean(
+    process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS,
+  );
 
-  // Placeholder mode — Firebase not configured yet.
-  if (!db) {
+  // Placeholder mode — nothing configured yet.
+  if (!db && !smtpConfigured) {
     console.log("[submit] (placeholder mode) new lead:", lead);
     return NextResponse.json({ ok: true });
   }
 
-  try {
-    // 4. Store the lead.
-    await db.collection("leads").add(lead);
-
-    // 5. Queue the notification email (Trigger Email extension format).
-    const html = `
-      <h2>New practice submission — LiLi M.D.</h2>
-      <p><strong>Name:</strong> ${escapeHtml(name)}</p>
-      <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-      <p><strong>Socials:</strong> ${escapeHtml(socials) || "—"}</p>
-      <p><strong>Message:</strong><br/>${escapeHtml(message) || "—"}</p>
-    `;
-    await db.collection(MAIL_COLLECTION).add({
-      to: NOTIFY_EMAIL,
-      replyTo: email,
-      message: {
-        subject: `New practice submission — ${name}`,
-        text: `Name: ${name}\nEmail: ${email}\nSocials: ${socials}\nMessage: ${message}`,
-        html,
-      },
-    });
-
-    return NextResponse.json({ ok: true });
-  } catch (err) {
-    console.error("[submit] failed to store lead:", err);
-    return NextResponse.json(
-      { error: "Could not submit right now. Please try again." },
-      { status: 500 },
-    );
+  // 4. Store the lead (durable record). A storage failure is a real error.
+  if (db) {
+    try {
+      await db.collection("leads").add(lead);
+    } catch (err) {
+      console.error("[submit] failed to store lead:", err);
+      return NextResponse.json(
+        { error: "Could not submit right now. Please try again." },
+        { status: 500 },
+      );
+    }
   }
+
+  // 5. Send the notification email (best-effort — never lose a stored lead).
+  try {
+    const sent = await sendLeadNotification(lead);
+    if (!sent && !db) {
+      console.log("[submit] (placeholder mode) new lead:", lead);
+    }
+  } catch (err) {
+    console.error("[submit] failed to send notification email:", err);
+  }
+
+  return NextResponse.json({ ok: true });
 }

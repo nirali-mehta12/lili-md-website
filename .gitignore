@@ -41,3 +41,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# playwright-cli session artifacts
+.playwright-cli/
+
+# firebase CLI cache/logs
+.firebase/
+
+# local tooling
+.claude/
+
+# design source (not used by the site at runtime — site serves from /public)
+/assets/
+*.pdf

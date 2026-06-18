@@ -1,0 +1,15 @@
+# Build context excludes — keeps the image small and never bakes secrets in.
+node_modules
+.next
+.git
+.gitignore
+.env*
+assets
+*.pdf
+*.log
+firebase-debug.log
+README.md
+.DS_Store
+Dockerfile
+.dockerignore
+npm-debug.log*

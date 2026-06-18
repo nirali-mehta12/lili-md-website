@@ -1,41 +1,32 @@
-import { Section } from "../ui/Section";
-import { Placeholder } from "../ui/Placeholder";
+import Image from "next/image";
 import { Reveal } from "../ui/Reveal";
-import { Button } from "../ui/Button";
 import { asset } from "@/lib/content";
 
 export function Asset() {
   return (
-    <Section>
-      <Reveal>
-        <div className="relative overflow-hidden rounded-3xl border border-gold/20 bg-maroon-800 p-8 sm:p-12 md:p-16">
-          <div className="grid items-center gap-10 md:grid-cols-2">
-            <div>
-              <h2 className="font-serif text-3xl tracking-tight text-cream sm:text-4xl">
-                {asset.heading}
-              </h2>
-              <div className="rule-gold mt-6 w-24" />
-              <p className="mt-6 leading-relaxed text-cream-muted">
-                {asset.body}
-              </p>
-              <div className="mt-8 flex flex-wrap gap-4">
-                <Button href="#submit" variant="gold">
-                  {asset.primaryCta}
-                </Button>
-                <Button href="#about" variant="outline">
-                  {asset.secondaryCta}
-                </Button>
-              </div>
-            </div>
+    <section className="px-6 pb-6 pt-10 sm:pb-8 sm:pt-14">
+      <Reveal className="relative mx-auto w-full max-w-[80rem]">
+        {/* Full Section-6 card: maroon panel + tan arc + stethoscope + floating labels, all baked in */}
+        <Image
+          src="/asset-all.png"
+          alt="Turn your practice into an autonomous, optimized, high-value AI asset"
+          width={2400}
+          height={1285}
+          className="h-auto w-full"
+          priority={false}
+        />
 
-            {/* Stethoscope image */}
-            <Placeholder
-              label="Stethoscope image"
-              className="aspect-square w-full max-w-sm justify-self-center"
-            />
-          </div>
+        {/* Heading + body overlaid on the left of the card, vertically centered on the card */}
+        <div className="absolute inset-y-0 left-0 flex w-1/2 flex-col justify-center pb-[5%] pl-[9%] pr-3">
+          <h2 className="font-serif text-2xl leading-[1.12] tracking-tight text-gold sm:text-4xl md:text-[2.6rem]">
+            <span className="block">{asset.heading.line1}</span>
+            <span className="block">{asset.heading.line2}</span>
+          </h2>
+          <p className="mt-4 max-w-[20rem] text-[13px] leading-relaxed text-white/90 sm:text-[14px]">
+            {asset.body}
+          </p>
         </div>
       </Reveal>
-    </Section>
+    </section>
   );
 }

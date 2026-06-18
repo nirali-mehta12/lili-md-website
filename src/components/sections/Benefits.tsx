@@ -1,28 +1,45 @@
-import { Section, SectionHeading } from "../ui/Section";
-import { Placeholder } from "../ui/Placeholder";
+import Image from "next/image";
 import { Reveal } from "../ui/Reveal";
 import { benefits } from "@/lib/content";
 
 export function Benefits() {
   return (
-    <Section className="bg-maroon-950/40">
-      <SectionHeading>{benefits.heading}</SectionHeading>
+    <section className="px-6 pb-10 pt-6 sm:px-8 sm:pb-14 sm:pt-8">
+      <div className="mx-auto w-full max-w-[68rem]">
+        {/* Heading: "Founding Member" (white, flanked by gold lines) + "Benefits" (gold) */}
+        <Reveal>
+          <div className="flex items-center justify-center gap-5 sm:gap-8">
+            <span className="hidden h-px flex-1 bg-gold/55 sm:block" />
+            <h2 className="whitespace-nowrap font-serif text-3xl leading-none tracking-tight text-white sm:text-4xl md:text-5xl">
+              {benefits.heading.line1}
+            </h2>
+            <span className="hidden h-px flex-1 bg-gold/55 sm:block" />
+          </div>
+          <h2 className="mt-1 text-center font-serif text-3xl leading-tight tracking-tight text-gold sm:text-4xl md:text-5xl">
+            {benefits.heading.line2}
+          </h2>
+        </Reveal>
 
-      <div className="mt-14 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
-        {benefits.items.map((item, i) => (
-          <Reveal key={item.title} delay={i * 90}>
-            <div className="flex h-full flex-col items-center text-center">
-              <Placeholder
-                label={`Benefit ${i + 1}`}
-                className="aspect-square w-full"
-              />
-              <h3 className="mt-4 font-serif text-base leading-snug text-cream">
-                {item.title}
-              </h3>
-            </div>
-          </Reveal>
-        ))}
+        {/* 5 square tiles, each with a 2-line gold caption */}
+        <div className="mt-12 grid grid-cols-2 gap-x-5 gap-y-9 sm:mt-16 sm:grid-cols-3 md:grid-cols-5 md:gap-x-3.5">
+          {benefits.items.map((item, i) => (
+            <Reveal key={item.title} delay={i * 90}>
+              <figure className="flex flex-col items-center text-center">
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  width={1000}
+                  height={1000}
+                  className="w-full rounded-md"
+                />
+                <figcaption className="mt-4 w-[62%] text-sm font-medium leading-snug text-gold">
+                  {item.title}
+                </figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
       </div>
-    </Section>
+    </section>
   );
 }

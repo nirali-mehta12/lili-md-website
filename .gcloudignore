@@ -1,0 +1,11 @@
+# What NOT to upload to Cloud Build when running `gcloud run deploy --source .`
+# (public/ IS kept — the app serves those images.)
+.git
+node_modules
+.next
+.env*
+assets
+*.pdf
+*.log
+firebase-debug.log
+.DS_Store

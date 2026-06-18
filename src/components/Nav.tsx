@@ -1,18 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { Logo } from "./ui/Logo";
 import { nav } from "@/lib/content";
 
 export function Nav() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/5 bg-maroon-950/70 backdrop-blur-md">
-      <nav className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6 sm:px-8">
-        <Link href="#home" aria-label="LiLi M.D. home">
-          <Logo />
+    <header className="fixed inset-x-0 top-0 z-50 bg-wine-900">
+      <nav className="flex h-20 w-full items-center justify-between px-6 sm:px-10 lg:px-14">
+        <Link href="#home" aria-label="LiLi M.D. home" className="flex items-center">
+          <Image
+            src="/logo-lockup.png"
+            alt="LiLi MD"
+            width={1567}
+            height={532}
+            priority
+            className="h-12 w-auto sm:h-14"
+          />
         </Link>
 
         {/* Desktop links */}
@@ -21,7 +28,7 @@ export function Nav() {
             <li key={item.label}>
               <Link
                 href={item.href}
-                className="text-sm tracking-wide text-cream/80 transition-colors hover:text-gold"
+                className="text-base tracking-wide text-white transition-colors hover:text-gold"
               >
                 {item.label}
               </Link>
@@ -33,7 +40,7 @@ export function Nav() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="flex h-10 w-10 items-center justify-center text-cream md:hidden"
+          className="flex h-10 w-10 items-center justify-center text-white md:hidden"
           aria-label="Toggle menu"
           aria-expanded={open}
         >
@@ -53,13 +60,13 @@ export function Nav() {
 
       {/* Mobile menu */}
       {open && (
-        <ul className="flex flex-col gap-1 border-t border-white/5 bg-maroon-950/95 px-6 py-4 md:hidden">
+        <ul className="flex flex-col gap-1 border-t border-white/5 bg-wine-900 px-6 py-4 md:hidden">
           {nav.map((item) => (
             <li key={item.label}>
               <Link
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="block py-2 text-sm tracking-wide text-cream/80 transition-colors hover:text-gold"
+                className="block py-2 text-base tracking-wide text-white transition-colors hover:text-gold"
               >
                 {item.label}
               </Link>

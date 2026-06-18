@@ -1,0 +1,4 @@
+# Invitation-only site — keep it out of search engines.
+# Remove this file (or allow specific paths) if/when public indexing is desired.
+User-agent: *
+Disallow: /

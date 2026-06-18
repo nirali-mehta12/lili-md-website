@@ -1,63 +1,47 @@
-import Link from "next/link";
-import { Logo } from "./ui/Logo";
-import { Placeholder } from "./ui/Placeholder";
+import Image from "next/image";
+import { Reveal } from "./ui/Reveal";
 import { nav, footer } from "@/lib/content";
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/5 bg-maroon-950 px-6 py-16 sm:px-8">
-      <div className="mx-auto grid w-full max-w-6xl gap-12 md:grid-cols-3">
-        {/* Brand + blurb */}
-        <div className="md:col-span-2">
-          <Logo />
-          <h3 className="mt-6 font-serif text-xl text-cream">
-            {footer.blurbHeading}
-          </h3>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-cream-muted">
-            {footer.blurb}
-          </p>
-          <p className="mt-6 text-sm italic text-gold/80">
-            {footer.privateClub}
-          </p>
-        </div>
+    <footer className="px-6 pb-24 sm:px-8">
+      <div className="mx-auto w-full max-w-6xl">
+        {/* top divider */}
+        <div className="h-px w-full bg-gold/45" />
 
-        {/* Navigate + socials */}
-        <div>
-          <h4 className="text-xs font-medium uppercase tracking-widest text-gold">
-            {footer.navHeading}
-          </h4>
-          <ul className="mt-4 space-y-2">
-            {nav.map((item) => (
-              <li key={item.label}>
-                <Link
-                  href={item.href}
-                  className="text-sm text-cream-muted transition-colors hover:text-gold"
+        <Reveal className="mt-14 flex flex-col gap-12 sm:mt-16 sm:flex-row sm:items-start sm:justify-between">
+          {/* Emblem */}
+          <Image
+            src="/footer-emblem.png"
+            alt="LiLi M.D."
+            width={1273}
+            height={1252}
+            className="h-20 w-auto object-contain sm:h-24"
+          />
+
+          {/* Navigate */}
+          <div className="sm:text-right">
+            <h2 className="font-serif text-4xl leading-none text-gold sm:text-5xl">
+              {footer.navHeading}
+            </h2>
+            <div className="mt-3 h-px w-44 bg-gold/60 sm:ml-auto" />
+            <nav className="mt-5 grid max-w-[15rem] grid-cols-2 gap-x-10 gap-y-2 text-left sm:ml-auto">
+              {nav.map((l) => (
+                <a
+                  key={l.label}
+                  href={l.href}
+                  className="text-sm text-gold transition-colors hover:text-white"
                 >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-8 flex gap-3">
-            {footer.socials.map((s) => (
-              <Link
-                key={s.label}
-                href={s.href}
-                aria-label={s.label}
-                className="transition-opacity hover:opacity-80"
-              >
-                {/* Replace with the real social icon SVGs from the designer */}
-                <Placeholder label={s.label.slice(0, 2)} className="h-10 w-10" />
-              </Link>
-            ))}
+                  {l.label}
+                </a>
+              ))}
+            </nav>
           </div>
-        </div>
-      </div>
+        </Reveal>
 
-      <div className="mx-auto mt-12 w-full max-w-6xl border-t border-white/5 pt-6 text-center text-xs text-cream-muted/60">
-        © {new Date().getFullYear()} {footer.privateClub.split(" — ")[0]}. All
-        rights reserved.
+        <p className="mt-20 text-center text-xs tracking-wide text-white/35">
+          {footer.legal}
+        </p>
       </div>
     </footer>
   );

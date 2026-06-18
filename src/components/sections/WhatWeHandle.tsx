@@ -4,8 +4,8 @@ import { whatWeHandle } from "@/lib/content";
 
 export function WhatWeHandle() {
   return (
-    <section className="px-6 py-10 sm:px-8 sm:py-14">
-      <div className="mx-auto grid w-full max-w-6xl items-center gap-10 md:grid-cols-2 lg:gap-16">
+    <section className="px-6 py-10 sm:px-8 sm:py-12">
+      <div className="mx-auto grid w-full max-w-5xl items-center gap-10 md:grid-cols-2 lg:gap-16">
         {/* Left — AI graphic on its own warm rounded panel (baked into the asset) */}
         <Reveal>
           <Image

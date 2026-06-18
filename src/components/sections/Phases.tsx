@@ -3,7 +3,7 @@ import { phases } from "@/lib/content";
 
 export function Phases() {
   return (
-    <section className="px-6 py-10 sm:px-8 sm:py-14">
+    <section className="px-6 py-10 sm:px-8 sm:py-12">
       <div className="mx-auto w-full max-w-5xl">
         {/* Heading: "The Three-Phase" (white, flanked by gold lines) + "Practice Journey" (gold) */}
         <Reveal>

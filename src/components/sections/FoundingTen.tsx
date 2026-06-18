@@ -6,7 +6,7 @@ export function FoundingTen() {
   return (
     <section
       id="founding"
-      className="px-6 py-12 sm:px-8 sm:py-16"
+      className="px-6 py-10 sm:px-8 sm:py-12"
       style={{
         background: "radial-gradient(95% 75% at 50% 32%, #2e142a 0%, #1c0b17 68%)",
       }}
@@ -29,15 +29,21 @@ export function FoundingTen() {
           </p>
         </Reveal>
 
-        {/* 2×5 grid of founding-member slates (all 10 composited in one asset) */}
+        {/* Founding-member slates — individual images in a responsive grid
+            (2 columns on phones, 5 on desktop) so they stay large + legible. */}
         <Reveal delay={120}>
-          <Image
-            src="/founding-slates.png"
-            alt="Ten founding-member position slates, awaiting selection"
-            width={1870}
-            height={1128}
-            className="mx-auto mt-10 h-auto w-full sm:mt-12"
-          />
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:mt-12 sm:grid-cols-5 sm:gap-4">
+            {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+              <Image
+                key={n}
+                src={`/slate-${n}.png`}
+                alt={`Founding member position ${n}, awaiting selection`}
+                width={347}
+                height={538}
+                className="h-auto w-full"
+              />
+            ))}
+          </div>
         </Reveal>
       </div>
     </section>

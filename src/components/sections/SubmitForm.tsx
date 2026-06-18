@@ -47,8 +47,8 @@ export function SubmitForm() {
   }
 
   return (
-    <section id="contact" className="px-6 py-16 sm:px-8 sm:py-20">
-      <div className="mx-auto w-full max-w-6xl">
+    <section id="contact" className="px-6 py-10 sm:px-8 sm:py-12">
+      <div className="mx-auto w-full max-w-5xl">
         {/* top divider */}
         <div className="mb-12 h-px w-full bg-gold/45 sm:mb-16" />
 

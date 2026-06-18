@@ -5,7 +5,7 @@ import { nav, footer } from "@/lib/content";
 export function Footer() {
   return (
     <footer className="px-6 pb-24 sm:px-8">
-      <div className="mx-auto w-full max-w-6xl">
+      <div className="mx-auto w-full max-w-5xl">
         {/* top divider */}
         <div className="h-px w-full bg-gold/45" />
 

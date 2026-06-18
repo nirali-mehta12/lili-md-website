@@ -4,7 +4,7 @@ import { workLess } from "@/lib/content";
 
 export function WorkLess() {
   return (
-    <section className="px-6 py-10 sm:py-14">
+    <section className="px-6 py-10 sm:px-8 sm:py-12">
       <Reveal className="mx-auto w-[92%] max-w-[58rem]">
         <div
           className="flex items-center justify-center rounded-2xl bg-cover bg-center px-6 py-8 text-center shadow-2xl shadow-black/30 sm:px-10 sm:py-12"

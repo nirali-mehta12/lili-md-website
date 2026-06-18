@@ -6,7 +6,7 @@ const LABEL_X = ["18.5%", "50%", "81.5%"];
 
 export function Timeline() {
   return (
-    <section className="px-6 py-16 sm:px-8 sm:py-20">
+    <section className="px-6 py-10 sm:px-8 sm:py-12">
       <div className="mx-auto w-full max-w-5xl">
         {/* Heading: "The 3-Tier" (white, flanked) + "Growth Timeline" (gold) */}
         <Reveal>

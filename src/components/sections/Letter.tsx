@@ -4,8 +4,8 @@ import { letter } from "@/lib/content";
 
 export function Letter() {
   return (
-    <section className="px-6 pb-14 pt-6 sm:px-8 sm:pb-20 sm:pt-8">
-      <Reveal className="mx-auto w-[92%] max-w-[70rem]">
+    <section className="px-6 py-10 sm:px-8 sm:py-12">
+      <Reveal className="mx-auto w-full max-w-5xl">
         <div
           className="relative px-4 py-2 text-center sm:px-5 sm:py-3"
           style={{

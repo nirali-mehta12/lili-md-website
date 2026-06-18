@@ -4,8 +4,8 @@ import { benefits } from "@/lib/content";
 
 export function Benefits() {
   return (
-    <section className="px-6 pb-10 pt-6 sm:px-8 sm:pb-14 sm:pt-8">
-      <div className="mx-auto w-full max-w-[68rem]">
+    <section className="px-6 py-10 sm:px-8 sm:py-12">
+      <div className="mx-auto w-full max-w-5xl">
         {/* Heading: "Founding Member" (white, flanked by gold lines) + "Benefits" (gold) */}
         <Reveal>
           <div className="flex items-center justify-center gap-5 sm:gap-8">

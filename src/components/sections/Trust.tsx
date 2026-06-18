@@ -4,7 +4,7 @@ import { trust } from "@/lib/content";
 
 export function Trust() {
   return (
-    <section className="px-6 py-8 sm:py-10">
+    <section className="px-6 py-10 sm:px-8 sm:py-12">
       <Reveal className="mx-auto w-full max-w-5xl">
         {/* Equal thirds: dividers sit at 1/3 and 2/3, so the badges float in the
             middle third with clear space between them and the divider lines. */}

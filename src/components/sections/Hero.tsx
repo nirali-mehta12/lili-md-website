@@ -46,7 +46,7 @@ export function Hero() {
       </div>
 
       {/* Eyebrow + diamond accent + two-tone title */}
-      <div className="relative mx-auto max-w-5xl px-6 pb-10 pt-12 text-center sm:pb-12 sm:pt-14">
+      <div className="relative mx-auto max-w-5xl px-6 pb-10 pt-6 text-center sm:pb-12 sm:pt-8">
         <Reveal>
           <p className="text-xs uppercase tracking-[0.22em] text-gold sm:text-[15px]">
             {hero.eyebrow}

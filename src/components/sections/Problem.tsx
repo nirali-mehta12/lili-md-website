@@ -6,12 +6,12 @@ export function Problem() {
   return (
     <section
       id="about"
-      className="px-6 py-10 sm:px-8 sm:py-14"
+      className="px-6 py-10 sm:px-8 sm:py-12"
       style={{
         background: "radial-gradient(95% 75% at 50% 32%, #2e142a 0%, #1c0b17 68%)",
       }}
     >
-      <div className="relative mx-auto w-full max-w-6xl">
+      <div className="relative mx-auto w-full max-w-5xl">
         {/* Two-tone heading: "The Problem" flanked by gold lines, then line 2 */}
         <Reveal>
           <div className="flex items-center justify-center gap-5 sm:gap-8">

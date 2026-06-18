@@ -3,8 +3,8 @@ import { tiers } from "@/lib/content";
 
 export function Tiers() {
   return (
-    <section id="tiers" className="px-6 py-10 sm:px-8 sm:py-14">
-      <div className="mx-auto w-full max-w-6xl">
+    <section id="tiers" className="px-6 py-10 sm:px-8 sm:py-12">
+      <div className="mx-auto w-full max-w-5xl">
         <Reveal>
           <h2 className="text-center font-serif text-3xl leading-tight tracking-tight text-white sm:text-4xl md:text-[2.75rem]">
             {tiers.heading}

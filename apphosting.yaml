@@ -1,0 +1,43 @@
+# Firebase App Hosting — backend runtime config
+# https://firebase.google.com/docs/app-hosting/configure
+#
+# These env vars are read by the server (src/lib/firebase.ts + src/lib/email.ts).
+# FIREBASE_PROJECT_ID is REQUIRED — without it the app runs in "placeholder
+# mode" and silently drops form submissions instead of saving them to Firestore.
+
+runConfig:
+  # Cap scaling — this is a low-traffic marketing site; keeps cost predictable.
+  maxInstances: 2
+
+env:
+  - variable: FIREBASE_PROJECT_ID
+    value: lili-md-website
+    availability:
+      - RUNTIME
+  - variable: GOOGLE_CLOUD_PROJECT
+    value: lili-md-website
+    availability:
+      - RUNTIME
+  - variable: NOTIFY_EMAIL
+    value: admin@lilisolutions.ai
+    availability:
+      - RUNTIME
+  - variable: SMTP_HOST
+    value: smtp.gmail.com
+    availability:
+      - RUNTIME
+  - variable: SMTP_PORT
+    value: "465"
+    availability:
+      - RUNTIME
+
+  # --- Email sending (Option B: pending noreply@ from ops) ---
+  # When Asish provisions noreply@ + stores the App Password in Secret Manager,
+  # add these (SMTP_PASS as a Secret Manager reference, not a plain value):
+  #
+  # - variable: SMTP_USER
+  #   value: noreply@lilisolutions.ai
+  #   availability: [RUNTIME]
+  # - variable: SMTP_PASS
+  #   secret: SMTP_PASS          # name of the Secret Manager secret
+  #   availability: [RUNTIME]

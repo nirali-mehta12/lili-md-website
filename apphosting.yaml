@@ -41,3 +41,15 @@ env:
   # - variable: SMTP_PASS
   #   secret: SMTP_PASS          # name of the Secret Manager secret
   #   availability: [RUNTIME]
+
+  # --- Access gate (currently OFF — the site is public) ---
+  # See ACCESS_GATE.md. To enable the invitation gate later:
+  #   1. Build the lock page at src/app/locked/page.tsx (UI).
+  #   2. Create a Secret Manager secret ACCESS_SESSION_SECRET (32+ random bytes).
+  #   3. Uncomment both entries below, then redeploy.
+  # - variable: ACCESS_GATE_ENABLED
+  #   value: "true"
+  #   availability: [RUNTIME]
+  # - variable: ACCESS_SESSION_SECRET
+  #   secret: ACCESS_SESSION_SECRET
+  #   availability: [RUNTIME]

@@ -31,16 +31,17 @@ env:
     availability:
       - RUNTIME
 
-  # --- Email sending (Option B: pending noreply@ from ops) ---
-  # When Asish provisions noreply@ + stores the App Password in Secret Manager,
-  # add these (SMTP_PASS as a Secret Manager reference, not a plain value):
-  #
-  # - variable: SMTP_USER
-  #   value: noreply@lilisolutions.ai
-  #   availability: [RUNTIME]
-  # - variable: SMTP_PASS
-  #   secret: SMTP_PASS          # name of the Secret Manager secret
-  #   availability: [RUNTIME]
+  # --- Email sending: form notifications -> admin@lilisolutions.ai (NOTIFY_EMAIL) ---
+  # Sends from nirali@lilisolutions.ai via Gmail SMTP + an App Password.
+  # The App Password is a Secret Manager secret (never plaintext here).
+  - variable: SMTP_USER
+    value: nirali@lilisolutions.ai
+    availability:
+      - RUNTIME
+  - variable: SMTP_PASS
+    secret: SMTP_PASS
+    availability:
+      - RUNTIME
 
   # --- Access gate (ON — site is invitation-only) ---
   # See ACCESS_GATE.md. To make the site public again, set ENABLED to "false"

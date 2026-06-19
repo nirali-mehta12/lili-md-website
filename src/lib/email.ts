@@ -57,7 +57,10 @@ function escapeHtml(s: string): string {
 /** Sends the notification. Returns true if sent, false if SMTP unconfigured. */
 export async function sendLeadNotification(lead: Lead): Promise<boolean> {
   const transporter = getTransporter();
-  if (!transporter) return false;
+  if (!transporter) {
+    console.log("[email] SMTP not configured — skipping notification");
+    return false;
+  }
 
   const to = process.env.NOTIFY_EMAIL || "admin@lilisolutions.ai";
   const from = process.env.SMTP_FROM || process.env.SMTP_USER!;
@@ -80,5 +83,6 @@ export async function sendLeadNotification(lead: Lead): Promise<boolean> {
       <p><strong>Message:</strong><br/>${escapeHtml(lead.message) || "—"}</p>
     `,
   });
+  console.log("[email] notification sent ->", to);
   return true;
 }

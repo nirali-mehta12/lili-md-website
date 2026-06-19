@@ -15,15 +15,17 @@ function authed(request: NextRequest): boolean {
   return isAdmin(request.cookies.get(ADMIN_COOKIE)?.value);
 }
 
-const UNAUTH = NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+// Must return a FRESH response each call — a Response body can only be sent once.
+const unauthorized = () =>
+  NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
 
 export async function GET(request: NextRequest) {
-  if (!authed(request)) return UNAUTH;
+  if (!authed(request)) return unauthorized();
   return NextResponse.json({ ok: true, invites: await listInvites() });
 }
 
 export async function POST(request: NextRequest) {
-  if (!authed(request)) return UNAUTH;
+  if (!authed(request)) return unauthorized();
 
   let body: { label?: string; ttlDays?: number | null };
   try {
@@ -50,7 +52,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  if (!authed(request)) return UNAUTH;
+  if (!authed(request)) return unauthorized();
   const id = request.nextUrl.searchParams.get("id");
   if (!id) {
     return NextResponse.json({ ok: false, error: "Missing id." }, { status: 400 });

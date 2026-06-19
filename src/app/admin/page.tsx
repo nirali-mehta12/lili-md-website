@@ -23,12 +23,18 @@ export default function AdminPage() {
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/admin/invites");
-    if (res.status === 401) return setAuthed(false);
-    if (res.ok) {
-      const d = await res.json();
-      setInvites(d.invites || []);
-      setAuthed(true);
+    try {
+      const res = await fetch("/api/admin/invites");
+      if (res.ok) {
+        const d = await res.json();
+        setInvites(d.invites || []);
+        setAuthed(true);
+      } else {
+        // 401 (not logged in) or any other status -> show the login form.
+        setAuthed(false);
+      }
+    } catch {
+      setAuthed(false); // network error -> show login, never hang on "Loading…"
     }
   }, []);
   useEffect(() => {

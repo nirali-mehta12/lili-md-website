@@ -31,9 +31,16 @@ export function proxy(request: NextRequest) {
   // Let the lock page itself render.
   if (pathname === LOCK_PAGE) return NextResponse.next();
 
+  // Gated responses must never be shared-cached — otherwise the CDN would serve
+  // one visitor's result (locked or unlocked) to everyone, bypassing this check.
+  const noStore = (res: NextResponse) => {
+    res.headers.set("Cache-Control", "private, no-store, must-revalidate");
+    return res;
+  };
+
   // Already authenticated for this device?
   if (verifySession(request.cookies.get(SESSION_COOKIE)?.value)) {
-    return NextResponse.next();
+    return noStore(NextResponse.next());
   }
 
   // One-click invite link (?c=CODE) -> validate via the access route, which
@@ -47,7 +54,7 @@ export function proxy(request: NextRequest) {
   }
 
   // No session, no code -> show the lock page (keep the URL they came to).
-  return NextResponse.rewrite(new URL(LOCK_PAGE, request.url));
+  return noStore(NextResponse.rewrite(new URL(LOCK_PAGE, request.url)));
 }
 
 export const config = {

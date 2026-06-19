@@ -14,6 +14,11 @@ import { FoundingTen } from "@/components/sections/FoundingTen";
 import { SubmitForm } from "@/components/sections/SubmitForm";
 import { Footer } from "@/components/Footer";
 
+// Gated by proxy.ts — render per-request so the access check always runs.
+// A statically cached page would be served by the CDN regardless of session,
+// which would bypass the gate entirely.
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <>

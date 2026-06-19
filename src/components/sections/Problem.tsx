@@ -8,8 +8,11 @@ export function Problem() {
       id="about"
       className="px-6 py-10 sm:px-8 sm:py-12"
       style={{
+        // Vertical dark→plum→dark band (matches the PDF's actual profile). A linear
+        // gradient blends to #1c0b17 at top & bottom (= neighboring sections, no seam)
+        // and renders identically on every screen, unlike the old radial "sphere".
         background:
-          "radial-gradient(65% 50% at 50% 16%, #2e142a 0%, transparent 72%), radial-gradient(94% 72% at 50% 64%, #2e142a 0%, transparent 72%), #1c0b17",
+          "linear-gradient(180deg, #1c0b17 0%, #2e142a 50%, #1c0b17 100%)",
       }}
     >
       <div className="relative mx-auto w-full max-w-5xl">
@@ -30,8 +33,10 @@ export function Problem() {
           </p>
         </Reveal>
 
-        {/* 3 cards — square sides; center (AI-Native) is a taller portrait card */}
-        <div className="mt-12 grid items-center gap-5 sm:mt-16 sm:gap-7 md:grid-cols-3">
+        {/* 3 cards — square sides; center (AI-Native) is a taller portrait card.
+            Single-column (narrow panels / phones) caps to max-w-sm + centers so the
+            cards don't stretch into wide, short letterboxes; md+ restores the 3-up grid. */}
+        <div className="mx-auto mt-12 grid max-w-sm items-center gap-5 sm:mt-16 sm:gap-7 md:max-w-none md:grid-cols-3">
           {problem.options.map((opt, i) => (
             <Reveal key={opt.title} delay={i * 110}>
               <div

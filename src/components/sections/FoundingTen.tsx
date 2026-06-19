@@ -8,7 +8,11 @@ export function FoundingTen() {
       id="founding"
       className="px-6 py-10 sm:px-8 sm:py-12"
       style={{
-        background: "radial-gradient(95% 75% at 50% 32%, #2e142a 0%, #1c0b17 68%)",
+        // Vertical dark→plum→dark band (matches the PDF's actual profile). A linear
+        // gradient blends to #1c0b17 at top & bottom (= neighboring sections, no seam)
+        // and renders identically on every screen, unlike the old radial "sphere".
+        background:
+          "linear-gradient(180deg, #1c0b17 0%, #2e142a 50%, #1c0b17 100%)",
       }}
     >
       <div className="relative mx-auto w-full max-w-5xl">

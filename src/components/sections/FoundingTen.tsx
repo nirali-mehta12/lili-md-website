@@ -14,12 +14,12 @@ export function FoundingTen() {
       <div className="relative mx-auto w-full max-w-5xl">
         {/* Heading: "Claim Your Place in" (white, flanked) + "the Founding 10" (gold) */}
         <Reveal>
-          <div className="flex items-center justify-center gap-5 sm:gap-8">
-            <span className="hidden h-px flex-1 bg-gold/55 sm:block" />
+          <div className="flex items-center justify-center gap-3 sm:gap-8">
+            <span className="h-px flex-1 bg-gold/55" />
             <h2 className="whitespace-nowrap font-serif text-3xl leading-none tracking-tight text-white sm:text-4xl md:text-5xl">
               {foundingTen.heading.line1}
             </h2>
-            <span className="hidden h-px flex-1 bg-gold/55 sm:block" />
+            <span className="h-px flex-1 bg-gold/55" />
           </div>
           <h2 className="mt-1 text-center font-serif text-3xl leading-tight tracking-tight text-gold sm:text-4xl md:text-5xl">
             {foundingTen.heading.line2}

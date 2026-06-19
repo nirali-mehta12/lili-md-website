@@ -176,7 +176,7 @@ export const timeline = {
   heading: { line1: "The 3-Tier", line2: "Growth Timeline" },
   body: "Every doctor pays the same rate. What changes as the club grows is the setup fee and the founding equity, which is saved for the first ten only.",
   steps: [
-    { count: "10", label: "The Founding Architects" },
+    { count: "10", label: "Founding Architects" },
     { count: "100", label: "The Laureates" },
     { count: "1000", label: "The Luminaries" },
   ],

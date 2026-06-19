@@ -24,15 +24,19 @@ page; nothing sensitive is behind it).
 | `src/proxy.ts` | The gate. OFF unless `ACCESS_GATE_ENABLED="true"`. |
 | `scripts/invite.mjs` | CLI to mint/list/revoke codes. |
 
-## UI to build (the other half) → `src/app/locked/page.tsx`
-A lock screen with **one code input + a submit button**. Behavior:
-1. On submit, `POST` JSON `{ code }` to `/api/access`.
-2. If the response is `{ ok: true }` → `window.location.reload()` (the gate now
-   sees the cookie and renders the real site).
-3. If not ok → show the returned `error` message.
-4. If the URL has `?e=1`, show "that link/code wasn't valid" (a one-click link failed).
+## UI to build (the ONLY remaining piece) → restyle `src/app/locked/page.tsx`
+The lock page is already **functional** — logic lives in `src/app/locked/use-unlock.ts`
+and a working (unstyled) placeholder is in `src/app/locked/page.tsx`. The UI window
+only restyles the markup; keep the `useUnlock()` wiring:
 
-That's the whole contract — the backend handles codes, sessions, and tracking.
+```tsx
+const { submitCode, pending, error, linkError } = useUnlock();
+// render an input + button; on submit call submitCode(code).
+// `error` = bad code msg, `linkError` = a one-click link failed, `pending` = in-flight.
+```
+
+On success the hook reloads the page; the gate then sees the session cookie and
+serves the real site. The backend handles codes, sessions, one-click links, and tracking.
 
 ## Minting codes
 ```bash

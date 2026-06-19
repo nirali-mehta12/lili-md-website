@@ -141,7 +141,7 @@ export const tiers = {
   items: [
     {
       tier: "Tier 1",
-      name: "The Architects",
+      name: "Founding Architects",
       bullets: [
         "No setup fee. 50,000 shares of equity.",
         "A permanent seat at the top, and a say in what the club builds.",
@@ -176,7 +176,7 @@ export const timeline = {
   heading: { line1: "The 3-Tier", line2: "Growth Timeline" },
   body: "Every doctor pays the same rate. What changes as the club grows is the setup fee and the founding equity, which is saved for the first ten only.",
   steps: [
-    { count: "10", label: "The Architects" },
+    { count: "10", label: "The Founding Architects" },
     { count: "100", label: "The Laureates" },
     { count: "1000", label: "The Luminaries" },
   ],

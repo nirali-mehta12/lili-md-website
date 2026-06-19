@@ -19,7 +19,7 @@ export function Hero() {
 
         {/* Curved divider: wine DOME arching up into the photo + gold arc on top */}
         <svg
-          className="absolute inset-x-0 bottom-[-1px] h-36 w-full sm:h-48"
+          className="absolute inset-x-0 bottom-[-1px] h-24 w-full sm:h-48"
           viewBox="0 0 1440 170"
           preserveAspectRatio="none"
           aria-hidden="true"
@@ -41,7 +41,7 @@ export function Hero() {
           aria-hidden="true"
           width={1178}
           height={1178}
-          className="absolute bottom-[52px] left-1/2 h-16 w-16 -translate-x-1/2 drop-shadow-lg sm:bottom-[74px] sm:h-20 sm:w-20"
+          className="absolute bottom-[12px] left-1/2 h-14 w-14 -translate-x-1/2 drop-shadow-lg sm:bottom-[74px] sm:h-20 sm:w-20"
         />
       </div>
 

@@ -8,7 +8,8 @@ export function Problem() {
       id="about"
       className="px-6 py-10 sm:px-8 sm:py-12"
       style={{
-        background: "radial-gradient(95% 75% at 50% 32%, #2e142a 0%, #1c0b17 68%)",
+        background:
+          "radial-gradient(65% 50% at 50% 16%, #2e142a 0%, transparent 72%), radial-gradient(94% 72% at 50% 64%, #2e142a 0%, transparent 72%), #1c0b17",
       }}
     >
       <div className="relative mx-auto w-full max-w-5xl">

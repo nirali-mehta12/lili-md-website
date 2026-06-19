@@ -27,7 +27,7 @@ export function Timeline() {
 
         {/* Meter graphic + aligned labels */}
         <Reveal delay={120}>
-          <div className="relative mx-auto mt-12 w-full max-w-[42rem] sm:mt-14">
+          <div className="relative mx-auto mt-12 w-full max-w-lg sm:mt-14">
             <Image
               src="/timeline-meter.png"
               alt="Growth timeline: The Founding 10, The Laureate 100, The Luminary 1000"

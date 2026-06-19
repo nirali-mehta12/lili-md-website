@@ -30,12 +30,18 @@ export function Phases() {
               {i > 0 && (
                 <span className="absolute inset-y-7 left-0 hidden w-px bg-gold/45 md:block" />
               )}
-              <div className="h-full px-1 pt-8 md:px-8">
+              <div
+                className={`h-full px-1 pt-8 md:px-8 ${
+                  i > 0
+                    ? "mt-6 border-t border-gold/30 md:mt-0 md:border-t-0"
+                    : ""
+                }`}
+              >
                 <div className="flex items-baseline gap-3">
                   <span className="font-serif text-4xl leading-none text-white sm:text-5xl">
                     {item.number}
                   </span>
-                  <span className="text-sm font-medium text-white">
+                  <span className="font-serif text-base text-white sm:text-lg">
                     {item.rate}
                   </span>
                 </div>

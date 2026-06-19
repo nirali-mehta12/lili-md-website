@@ -26,7 +26,11 @@ export const socials = [
 ];
 
 export const hero = {
-  eyebrow: "Ten founding physicians. By invitation only.",
+  // Two parts so mobile can break before "By invitation only." while desktop stays single-line.
+  eyebrow: {
+    line1: "Ten founding physicians.",
+    line2: "By invitation only.",
+  },
   heading: { line1: "The Private Club", line2: "at LiLi M.D." },
 };
 
@@ -137,7 +141,7 @@ export const tiers = {
   items: [
     {
       tier: "Tier 1",
-      name: "The Founding 10",
+      name: "The Architects",
       bullets: [
         "No setup fee. 50,000 shares of equity.",
         "A permanent seat at the top, and a say in what the club builds.",
@@ -147,7 +151,7 @@ export const tiers = {
     },
     {
       tier: "Tier 2",
-      name: "The Laureate 100",
+      name: "The Laureates",
       bullets: [
         "$25,000 one-time setup fee. Full member of the club.",
         "No equity.",
@@ -157,7 +161,7 @@ export const tiers = {
     },
     {
       tier: "Tier 3",
-      name: "The Luminary 1000",
+      name: "The Luminaries",
       bullets: [
         "$50,000 one-time setup fee.",
         "Full member of the club.",
@@ -172,9 +176,9 @@ export const timeline = {
   heading: { line1: "The 3-Tier", line2: "Growth Timeline" },
   body: "Every doctor pays the same rate. What changes as the club grows is the setup fee and the founding equity, which is saved for the first ten only.",
   steps: [
-    { count: "10", label: "The Founding 10" },
-    { count: "100", label: "The Laureate 100" },
-    { count: "1000", label: "The Luminary 1000" },
+    { count: "10", label: "The Architects" },
+    { count: "100", label: "The Laureates" },
+    { count: "1000", label: "The Luminaries" },
   ],
 };
 

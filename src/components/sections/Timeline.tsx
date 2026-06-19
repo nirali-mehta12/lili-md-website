@@ -30,7 +30,7 @@ export function Timeline() {
           <div className="relative mx-auto mt-12 w-full max-w-lg sm:mt-14">
             <Image
               src="/timeline-meter.png"
-              alt="Growth timeline: The Founding 10, The Laureate 100, The Luminary 1000"
+              alt="Growth timeline: The Architects, The Laureates, The Luminaries"
               width={2250}
               height={648}
               className="h-auto w-full"

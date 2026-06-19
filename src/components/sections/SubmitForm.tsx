@@ -54,12 +54,12 @@ export function SubmitForm() {
 
         <div className="grid gap-12 md:grid-cols-2 md:gap-0">
           {/* Left — heading, body, socials */}
-          <Reveal className="md:pr-12 lg:pr-16">
+          <Reveal className="text-center md:pr-12 md:text-left lg:pr-16">
             <h2 className="font-serif text-3xl leading-[1.12] tracking-tight text-gold sm:text-4xl md:text-[2.6rem]">
               <span className="block">{submit.heading.line1}</span>
               <span className="block">{submit.heading.line2}</span>
             </h2>
-            <p className="mt-6 max-w-md text-sm leading-relaxed text-white/90">
+            <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-white/90 md:mx-0">
               {submit.body}
             </p>
 

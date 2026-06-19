@@ -53,7 +53,7 @@ export function Letter() {
             {letter.cofounders.map((c) => (
               <p
                 key={c.name}
-                className="font-sans text-lg italic text-white sm:text-[20px]"
+                className="whitespace-nowrap font-sans text-sm italic text-white sm:whitespace-normal sm:text-[20px]"
               >
                 <span className="font-bold">{c.name}</span>{" "}
                 <span className="text-white/85">· {c.title}</span>

@@ -37,7 +37,7 @@ export function Phases() {
                     : ""
                 }`}
               >
-                <div className="flex items-baseline gap-3">
+                <div className="flex items-baseline justify-center gap-3 md:justify-start">
                   <span className="font-serif text-4xl leading-none text-white sm:text-5xl">
                     {item.number}
                   </span>
@@ -45,7 +45,7 @@ export function Phases() {
                     {item.rate}
                   </span>
                 </div>
-                <p className="mt-5 text-sm leading-relaxed text-gold">
+                <p className="mt-5 text-center text-sm leading-relaxed text-gold md:text-left">
                   {item.body}
                 </p>
               </div>

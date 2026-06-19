@@ -49,7 +49,8 @@ export function Hero() {
       <div className="relative mx-auto max-w-5xl px-6 pb-10 pt-6 text-center sm:pb-12 sm:pt-8">
         <Reveal>
           <p className="text-xs uppercase tracking-[0.22em] text-gold sm:text-[15px]">
-            {hero.eyebrow}
+            <span className="block sm:inline">{hero.eyebrow.line1}</span>{" "}
+            <span className="block sm:inline">{hero.eyebrow.line2}</span>
           </p>
           <div className="mx-auto mt-5 flex w-48 items-center justify-center gap-2">
             <span className="h-px flex-1 bg-gold/60" />

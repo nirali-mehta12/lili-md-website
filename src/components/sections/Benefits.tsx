@@ -20,24 +20,37 @@ export function Benefits() {
           </h2>
         </Reveal>
 
-        {/* 5 square tiles, each with a 2-line gold caption */}
+        {/* 5 square tiles, each with a 2-line gold caption.
+            Mobile (2 cols) has an orphan on row 3 — span the row and center
+            the inner figure so the last tile sits centered, not left-anchored. */}
         <div className="mt-12 grid grid-cols-2 gap-x-5 gap-y-9 sm:mt-16 sm:grid-cols-3 md:grid-cols-5 md:gap-x-3.5">
-          {benefits.items.map((item, i) => (
-            <Reveal key={item.title} delay={i * 90}>
-              <figure className="flex flex-col items-center text-center">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  width={1000}
-                  height={1000}
-                  className="w-full rounded-md"
-                />
-                <figcaption className="mt-4 w-[62%] text-sm font-medium leading-snug text-gold">
-                  {item.title}
-                </figcaption>
-              </figure>
-            </Reveal>
-          ))}
+          {benefits.items.map((item, i) => {
+            const isLast = i === benefits.items.length - 1;
+            return (
+              <Reveal
+                key={item.title}
+                delay={i * 90}
+                className={isLast ? "col-span-2 sm:col-span-1" : ""}
+              >
+                <figure
+                  className={`flex flex-col items-center text-center ${
+                    isLast ? "mx-auto w-1/2 sm:w-full" : ""
+                  }`}
+                >
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    width={1000}
+                    height={1000}
+                    className="w-full rounded-md"
+                  />
+                  <figcaption className="mt-4 w-[62%] text-sm font-medium leading-snug text-gold">
+                    {item.title}
+                  </figcaption>
+                </figure>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
     </section>

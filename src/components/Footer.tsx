@@ -9,7 +9,7 @@ export function Footer() {
         {/* top divider */}
         <div className="h-px w-full bg-gold/45" />
 
-        <Reveal className="mt-14 flex flex-col gap-12 sm:mt-16 sm:flex-row sm:items-start sm:justify-between">
+        <Reveal className="mt-14 flex flex-col items-center gap-12 sm:mt-16 sm:flex-row sm:items-start sm:justify-between">
           {/* Emblem */}
           <Image
             src="/footer-emblem.png"
@@ -19,13 +19,13 @@ export function Footer() {
             className="h-20 w-auto object-contain sm:h-24"
           />
 
-          {/* Navigate */}
-          <div className="sm:text-right">
+          {/* Navigate — centered under emblem on mobile, right-aligned on sm+ */}
+          <div className="text-center sm:text-right">
             <h2 className="font-serif text-4xl leading-none text-gold sm:text-5xl">
               {footer.navHeading}
             </h2>
-            <div className="mt-3 h-px w-44 bg-gold/60 sm:ml-auto" />
-            <nav className="mt-5 grid max-w-[15rem] grid-cols-2 gap-x-10 gap-y-2 text-left sm:ml-auto">
+            <div className="mx-auto mt-3 h-px w-44 bg-gold/60 sm:mr-0" />
+            <nav className="mx-auto mt-5 flex max-w-[15rem] flex-col gap-y-2 text-center sm:grid sm:grid-cols-2 sm:gap-x-10 sm:gap-y-2 sm:text-left sm:mr-0">
               {nav.map((l) => (
                 <a
                   key={l.label}

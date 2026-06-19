@@ -35,10 +35,16 @@ export function Problem() {
 
         {/* 3 cards — square sides; center (AI-Native) is a taller portrait card.
             Single-column (narrow panels / phones) caps to max-w-sm + centers so the
-            cards don't stretch into wide, short letterboxes; md+ restores the 3-up grid. */}
+            cards don't stretch into wide, short letterboxes; md+ restores the 3-up grid.
+            Mobile-only reorder: Sell → Keep Grinding → AI-Native (highlight goes last so
+            it reads as the "answer"); md+ restores DOM order Sell → AI-Native → Keep Grinding. */}
         <div className="mx-auto mt-12 grid max-w-sm items-center gap-5 sm:mt-16 sm:gap-7 md:max-w-none md:grid-cols-3">
           {problem.options.map((opt, i) => (
-            <Reveal key={opt.title} delay={i * 110}>
+            <Reveal
+              key={opt.title}
+              delay={i * 110}
+              className={`${i === 1 ? "order-3" : i === 2 ? "order-2" : "order-1"} md:order-none`}
+            >
               <div
                 className={`flex h-full flex-col items-center justify-center bg-cover bg-center px-6 py-8 text-center sm:px-7 md:py-0 ${
                   opt.highlight ? "md:aspect-[4/5]" : "md:aspect-square"

@@ -28,8 +28,11 @@ export function proxy(request: NextRequest) {
 
   const { pathname, searchParams } = request.nextUrl;
 
-  // Let the lock page itself render.
-  if (pathname === LOCK_PAGE) return NextResponse.next();
+  // The lock page and the admin tool handle their own auth — let them through
+  // the visitor gate (the admin tool is protected by its own password).
+  if (pathname === LOCK_PAGE || pathname.startsWith("/admin")) {
+    return NextResponse.next();
+  }
 
   // Gated responses must never be shared-cached — otherwise the CDN would serve
   // one visitor's result (locked or unlocked) to everyone, bypassing this check.

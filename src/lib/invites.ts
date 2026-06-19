@@ -121,3 +121,32 @@ export async function revokeInvite(id: string): Promise<boolean> {
   await db.collection(COLLECTION).doc(id).update({ revoked: true });
   return true;
 }
+
+export type InviteSummary = {
+  id: string;
+  label: string;
+  accessCount: number;
+  revoked: boolean;
+  createdAt: string;
+  lastAccessAt: string | null;
+  expiresAt: string | null;
+};
+
+/** All invites, newest first — for the admin tool. */
+export async function listInvites(): Promise<InviteSummary[]> {
+  const db = getDb();
+  if (!db) return [];
+  const snap = await db.collection(COLLECTION).orderBy("createdAt", "desc").get();
+  return snap.docs.map((d) => {
+    const v = d.data() as InviteDoc;
+    return {
+      id: d.id,
+      label: v.label,
+      accessCount: v.accessCount || 0,
+      revoked: !!v.revoked,
+      createdAt: v.createdAt,
+      lastAccessAt: v.lastAccessAt ?? null,
+      expiresAt: v.expiresAt ?? null,
+    };
+  });
+}

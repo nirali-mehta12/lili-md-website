@@ -38,7 +38,17 @@ const { submitCode, pending, error, linkError } = useUnlock();
 On success the hook reloads the page; the gate then sees the session cookie and
 serves the real site. The backend handles codes, sessions, one-click links, and tracking.
 
-## Minting codes
+## Minting codes — option 1: the admin web tool (no terminal) → `/admin`
+A password-protected page where the admin types a name and gets a code + one-click
+link, and can list/revoke existing codes. Protected by `ADMIN_SECRET` (separate from
+the visitor gate). To enable:
+1. `firebase apphosting:secrets:set ADMIN_SECRET` (choose a strong password — this is what the admin types)
+2. `firebase apphosting:secrets:grantaccess ADMIN_SECRET --backend lili-md-website`
+3. Uncomment the `ADMIN_SECRET` entry in `apphosting.yaml`, then redeploy.
+Then visit `/admin`, log in, and create codes. Until the secret is set, `/admin` shows
+a login that rejects everything (fail-safe).
+
+## Minting codes — option 2: the CLI
 ```bash
 node scripts/invite.mjs create "Dr. Jane Smith"     # no expiry
 node scripts/invite.mjs create "Dr. Jane Smith" 30  # expires in 30 days

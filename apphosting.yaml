@@ -53,3 +53,11 @@ env:
     secret: ACCESS_SESSION_SECRET
     availability:
       - RUNTIME
+
+  # --- Admin tool (/admin) password — uncomment to enable invite creation in the browser ---
+  # Create it first:  firebase apphosting:secrets:set ADMIN_SECRET
+  #                   firebase apphosting:secrets:grantaccess ADMIN_SECRET --backend lili-md-website
+  # - variable: ADMIN_SECRET
+  #   secret: ADMIN_SECRET
+  #   availability:
+  #     - RUNTIME

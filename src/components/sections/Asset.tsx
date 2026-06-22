@@ -4,7 +4,7 @@ import { asset } from "@/lib/content";
 
 export function Asset() {
   return (
-    <section className="px-6 py-10 sm:px-8 sm:py-12">
+    <section className="px-0 py-0 sm:px-8 sm:py-12">
       <Reveal className="relative mx-auto w-full max-w-5xl">
         {/* Text overlaid inside the card's left half — desktop only. On mobile
             the portrait composite has the heading + body baked into the asset,
@@ -25,7 +25,7 @@ export function Asset() {
           alt="Turn your practice into an autonomous, optimized, high-value AI asset"
           width={624}
           height={834}
-          className="mx-auto block h-auto w-full max-w-sm sm:hidden"
+          className="block h-auto w-full sm:hidden"
           priority={false}
         />
 

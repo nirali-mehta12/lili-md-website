@@ -45,6 +45,9 @@ next-env.d.ts
 # playwright-cli session artifacts
 .playwright-cli/
 
+# screenshot helper output (scripts/check-mobile.mjs)
+/scripts/screenshots/
+
 # firebase CLI cache/logs
 .firebase/
 firebase-debug.log

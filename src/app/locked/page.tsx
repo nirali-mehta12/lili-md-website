@@ -34,15 +34,16 @@ export default function LockedPage() {
 
   return (
     <main className="flex min-h-[100dvh] flex-col bg-[#1c0b17]">
-      <div className="flex flex-1 px-4 pt-5 sm:px-6 sm:pt-7">
-        {/* Left — marina/office window photo (desktop) */}
-        <div className="relative hidden w-[42%] shrink-0 lg:block">
+      <div className="flex flex-1 flex-col px-4 pt-5 sm:px-6 sm:pt-7 lg:flex-row">
+        {/* Marina/office-window photo. Square + above the panel on mobile +
+            tablet; portrait left column (42%) on lg+. */}
+        <div className="relative aspect-square w-full shrink-0 lg:aspect-auto lg:w-[42%]">
           <Image
             src="/lock-view.png"
             alt="The bay at dusk from a private office at LiLi M.D."
             fill
             priority
-            sizes="42vw"
+            sizes="(min-width: 1024px) 42vw, 100vw"
             className="object-cover object-center"
           />
         </div>

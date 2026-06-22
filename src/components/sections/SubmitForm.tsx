@@ -27,7 +27,10 @@ export function SubmitForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: fd.get("name"),
+          practiceName: fd.get("practiceName"),
           email: fd.get("email"),
+          phone: fd.get("phone"),
+          website: fd.get("website"),
           message: fd.get("message"),
           company: fd.get("company"), // honeypot
         }),
@@ -104,18 +107,51 @@ export function SubmitForm() {
                 aria-hidden="true"
                 className="absolute left-[-9999px] h-0 w-0 opacity-0"
               />
+              {/* Row 1: Name (required) | Practice Name (optional).
+                  Row 2: Email (required) | Phone (required).
+                  Both stack on mobile, side-by-side on sm+ so each input stays
+                  wide enough to read while typing. */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  autoComplete="name"
+                  placeholder={submit.fields.name}
+                  className={inputClass}
+                />
+                <input
+                  type="text"
+                  name="practiceName"
+                  autoComplete="organization"
+                  placeholder={submit.fields.practiceName}
+                  className={inputClass}
+                />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  placeholder={submit.fields.email}
+                  className={inputClass}
+                />
+                <input
+                  type="tel"
+                  name="phone"
+                  required
+                  inputMode="tel"
+                  autoComplete="tel"
+                  placeholder={submit.fields.phone}
+                  className={inputClass}
+                />
+              </div>
               <input
-                type="text"
-                name="name"
-                required
-                placeholder={submit.fields.name}
-                className={inputClass}
-              />
-              <input
-                type="email"
-                name="email"
-                required
-                placeholder={submit.fields.email}
+                type="url"
+                name="website"
+                inputMode="url"
+                autoComplete="url"
+                placeholder={submit.fields.website}
                 className={inputClass}
               />
               <textarea

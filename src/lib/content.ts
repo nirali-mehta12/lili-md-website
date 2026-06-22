@@ -196,7 +196,10 @@ export const submit = {
   socialsLabel: "Socials",
   fields: {
     name: "Name",
+    practiceName: "Practice Name",
     email: "Email",
+    phone: "Contact Number",
+    website: "Practice Website",
     message: "Message",
   },
   cta: "Submit",

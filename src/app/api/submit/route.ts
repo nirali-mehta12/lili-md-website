@@ -67,13 +67,16 @@ export async function POST(request: NextRequest) {
 
   // 3. Validate.
   const name = String(body.name || "").trim();
+  const practiceName = String(body.practiceName || "").trim();
   const email = String(body.email || "").trim();
+  const phone = String(body.phone || "").trim();
+  const website = String(body.website || "").trim();
   const socials = String(body.socials || "").trim();
   const message = String(body.message || "").trim();
 
-  if (!name || !email) {
+  if (!name || !email || !phone) {
     return NextResponse.json(
-      { error: "Name and email are required." },
+      { error: "Name, email, and contact number are required." },
       { status: 400 },
     );
   }
@@ -86,7 +89,10 @@ export async function POST(request: NextRequest) {
 
   const lead = {
     name,
+    practiceName,
     email,
+    phone,
+    website,
     socials,
     message,
     createdAt: new Date().toISOString(),

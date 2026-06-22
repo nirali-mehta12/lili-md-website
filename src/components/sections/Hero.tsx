@@ -10,7 +10,7 @@ export function Hero() {
         <Image
           src="/hero.png"
           alt="A LiLi M.D. founding physician in a private practice overlooking the bay"
-          width={1660}
+          width={1659}
           height={948}
           priority
           sizes="100vw"

@@ -138,3 +138,5 @@ terminal, not a non-interactive tool shell. Config files are written by hand her
 - `npm run dev` — local dev (http://localhost:3000)
 - `npm run build` — production build (also typechecks)
 - `npm run lint` — eslint
+- `npm run screenshot [url] [viewport...] [--section=#id] [--code=XXXX]` — Playwright self-verification; outputs to `scripts/screenshots/` (gitignored). Default URL `http://localhost:3000`; viewports default to all 5 presets. Use `--section=#tiers` to clip one section.
+- `npm run smoke-test` — mint a fresh 30-day "smoke test" invite code so you can poke around the gated production site. Requires local ADC (`gcloud auth application-default login`) since it writes to Firestore. Prints the plaintext code once — copy it from the terminal output.

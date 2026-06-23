@@ -15,13 +15,19 @@ export function Tiers() {
         <div className="mt-9 grid items-stretch gap-5 sm:mt-10 md:grid-cols-3">
           {tiers.items.map((item, i) => (
             <Reveal key={item.tier} delay={i * 110}>
-              <div className="flex h-full flex-col rounded-md bg-[#471a2e] px-6 py-6 sm:px-6 sm:py-7">
+              <div
+                className={`flex h-full flex-col rounded-md bg-[#471a2e] px-6 py-6 sm:px-6 sm:py-7 ${
+                  item.highlight
+                    ? "border border-gold-light shadow-[0_0_30px_-5px_rgba(243,213,159,0.4)]"
+                    : ""
+                }`}
+              >
                 <p className="font-serif text-base font-semibold tracking-wide text-gold">
                   {item.tier}
                 </p>
                 <h3
                   className={`mt-1 font-serif text-xl leading-snug sm:text-2xl ${
-                    item.highlight ? "text-gold" : "text-white"
+                    item.highlight ? "text-gold-light drop-shadow-[0_0_12px_rgba(243,213,159,0.45)]" : "text-white"
                   }`}
                 >
                   {item.name}
@@ -31,12 +37,12 @@ export function Tiers() {
                     <li
                       key={j}
                       className={`flex gap-2.5 text-[13px] leading-relaxed ${
-                        item.highlight ? "text-gold" : "text-white/90"
+                        item.highlight ? "text-gold-light" : "text-white/90"
                       }`}
                     >
                       <span
                         className={`mt-[0.45rem] inline-block h-1 w-1 shrink-0 rounded-full ${
-                          item.highlight ? "bg-gold" : "bg-white/70"
+                          item.highlight ? "bg-gold-light" : "bg-white/70"
                         }`}
                       />
                       <span>{b}</span>

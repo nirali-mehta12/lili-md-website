@@ -58,9 +58,23 @@ I have to swap later.
 - [ ] **Domain** — final URL so SEO meta + canonical tags can be set on day 1.
 - [ ] **Notification email + SMTP credentials** — where form submissions go.
 
-> **Folder convention:** stage assets in `assets/` at the repo root, grouped by
-> section (e.g. `assets/1 Hero/`, `assets/4 Problem/`). When designers send v2/v3
-> revisions, keep all versions — only the chosen one gets copied into `public/`.
+### Asset versioning & folder convention
+
+Designers iterate. Expect three or four revisions of the hero alone, with
+inconsistent filenames (`heroV2.png`, `hero-image-3.png`, `hero image 4.png`).
+Three rules that prevent pain:
+
+- **Stage everything in `assets/`** at the repo root, grouped by section
+  (`assets/1 Hero/`, `assets/4 Problem/`, …). This folder is **gitignored**
+  on the lilimd.ai precedent — designer source files don't ship to production
+  and don't bloat the repo.
+- **Keep every version** the designer sends. When they say "go back to V2"
+  three days later (and they will), you need V2 still on disk. Never overwrite.
+- **Only the chosen version gets copied into `public/`** with a stable
+  filename (e.g. always `public/hero.png` regardless of which V landed).
+  Code references the stable name — swaps are a one-line `cp` + a width/height
+  update in the Next/Image component if intrinsic dimensions differ. No JSX
+  churn across revisions.
 
 ---
 
@@ -121,6 +135,12 @@ firestore.rules           # Lock: no public client writes. Only Admin SDK from s
 ### Hard rules
 - **All copy lives in `src/lib/content.ts`.** Never hardcode user-facing text in JSX.
   This makes copy edits a 1-file change reviewable in a diff.
+- **Every top-level `<section>` gets a stable `id`.** Pattern: `id="home"`,
+  `id="about"`, `id="tiers"`, `id="growth"`, `id="contact"`. Two reasons:
+  (1) header nav anchors target them (`<a href="#tiers">`), and
+  (2) `npm run screenshot --section=#id` clips just that section for fast
+  visual self-verification during UI iteration. Add ids from day 1 — backfilling
+  later means re-running every screenshot you took.
 - **Server-only code (`firebase.ts`, `email.ts`, API routes) must NEVER be imported
   into client components.** Marker: top of those files explicitly states "server only."
 - **Decorative shapes drawn in code** (thin lines, dots, diamonds, gradients) —

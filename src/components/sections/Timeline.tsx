@@ -6,7 +6,7 @@ const LABEL_X = ["18.5%", "50%", "81.5%"];
 
 export function Timeline() {
   return (
-    <section className="px-6 py-10 sm:px-8 sm:py-12">
+    <section id="growth" className="px-6 py-10 sm:px-8 sm:py-12">
       <div className="mx-auto w-full max-w-5xl">
         {/* Heading: "The 3-Tier" (white, flanked) + "Growth Timeline" (gold) */}
         <Reveal>
@@ -40,7 +40,11 @@ export function Timeline() {
                 <span
                   key={s.count}
                   style={{ left: LABEL_X[i] }}
-                  className="absolute top-0 -translate-x-1/2 whitespace-nowrap font-label text-[10px] font-bold uppercase tracking-wide text-gold sm:text-[11px]"
+                  className={`absolute top-0 -translate-x-1/2 whitespace-nowrap font-label text-[10px] font-bold uppercase tracking-wide sm:text-[11px] ${
+                    i === 0
+                      ? "text-gold-light drop-shadow-[0_0_10px_rgba(243,213,159,0.55)]"
+                      : "text-gold/45"
+                  }`}
                 >
                   {s.label}
                 </span>

@@ -25,7 +25,7 @@ export function Footer() {
               {footer.navHeading}
             </h2>
             <div className="mx-auto mt-3 h-px w-44 bg-gold/60 sm:mr-0" />
-            <nav className="mx-auto mt-5 flex max-w-[15rem] flex-col gap-y-2 text-center sm:grid sm:grid-cols-2 sm:gap-x-10 sm:gap-y-2 sm:text-left sm:mr-0">
+            <nav className="mx-auto mt-5 flex max-w-[15rem] flex-col gap-y-2 text-center sm:max-w-none sm:flex-row sm:justify-end sm:gap-5 sm:text-left sm:mr-0">
               {nav.map((l) => (
                 <a
                   key={l.label}

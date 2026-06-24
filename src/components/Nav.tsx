@@ -5,6 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { nav } from "@/lib/content";
 
+// The top nav hides "About" for now — the section still exists at #about
+// (linkable from copy), it's just not surfaced as a header link. Footer
+// still shows the full nav. To restore, drop the filter below.
+const navLinks = nav.filter((l) => l.label !== "About");
+
 export function Nav() {
   const [open, setOpen] = useState(false);
 
@@ -24,7 +29,7 @@ export function Nav() {
 
         {/* Desktop links */}
         <ul className="hidden items-center gap-10 md:flex">
-          {nav.map((item) => (
+          {navLinks.map((item) => (
             <li key={item.label}>
               <Link
                 href={item.href}
@@ -61,7 +66,7 @@ export function Nav() {
       {/* Mobile menu */}
       {open && (
         <ul className="flex flex-col gap-1 border-t border-white/5 bg-wine-900 px-6 py-4 md:hidden">
-          {nav.map((item) => (
+          {navLinks.map((item) => (
             <li key={item.label}>
               <Link
                 href={item.href}

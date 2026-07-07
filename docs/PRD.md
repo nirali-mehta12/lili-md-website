@@ -17,6 +17,17 @@ through a personal invitation from Mel or self-identify as a qualifying
 physician via an application form. Once inside, they see the pitch and can
 formally raise their hand to be considered as a founding member.
 
+### 1.1 Team & stakeholders
+
+| Role | Owner | Responsibility |
+|---|---|---|
+| **CEO / founding sponsor** | Mel Interiano | Approves site direction, reviews doctor applications, manages personal invite list |
+| **Chief Medical Officer / cofounder** | Dr. John Yee | Physician-side clinical positioning + domain vetting |
+| **Product + engineering owner** | Nirali Mehta | Builds and maintains the site; single-maintainer engineering |
+| **Website designer** | Ronnie | Owns the visual design system, page-level HTML references, and brand guidelines (see `docs/LiLi_MD_Brand_Guidelines.html`, page mockups in `docs/`, and asset library under `assets/`) |
+| **Cloud-ops collaborator** | (external / delegated) | GCP infra provisioning, budgets, monitoring wiring via `lili-cloud-ops` Terraform |
+| **Notification recipient** | `admin@lilisolutions.ai` | Inbox that receives every lead + doctor application |
+
 ---
 
 ## 2. Problem statement
@@ -181,9 +192,9 @@ Cross-referenced against the numbered SRS requirements for traceability.
 
 ### 8.1 Constraints
 
-- **C1 — Design fidelity.** All screens must match the designer references
+- **C1 — Design fidelity.** All screens must match Ronnie's designer references
   in `docs/` (brand guide + page-level HTMLs). Copy edits allowed via
-  `content.ts`; layout deviations require designer sign-off.
+  `content.ts`; layout deviations require Ronnie's sign-off.
 - **C2 — Budget.** $25/month operational cap enforced by budget alerts.
 - **C3 — Security posture.** Site is invitation-only and never indexed by
   search engines while the founding cohort is being recruited.

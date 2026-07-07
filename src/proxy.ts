@@ -20,6 +20,7 @@ import { verifySession, SESSION_COOKIE } from "@/lib/session";
 */
 
 const LOCK_PAGE = "/locked";
+const APPLY_PAGE = "/apply";
 
 export function proxy(request: NextRequest) {
   if (process.env.ACCESS_GATE_ENABLED !== "true") {
@@ -28,9 +29,14 @@ export function proxy(request: NextRequest) {
 
   const { pathname, searchParams } = request.nextUrl;
 
-  // The lock page and the admin tool handle their own auth — let them through
-  // the visitor gate (the admin tool is protected by its own password).
-  if (pathname === LOCK_PAGE || pathname.startsWith("/admin")) {
+  // The lock page, the doctor-info page, and the admin tool handle their own
+  // auth — let them through the visitor gate (the admin tool is protected by
+  // its own password; /apply hands out a session cookie server-side on submit).
+  if (
+    pathname === LOCK_PAGE ||
+    pathname === APPLY_PAGE ||
+    pathname.startsWith("/admin")
+  ) {
     return NextResponse.next();
   }
 

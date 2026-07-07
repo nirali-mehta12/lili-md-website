@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Playfair_Display, Lora, Jost, Poppins } from "next/font/google";
+import {
+  Cormorant_Garamond,
+  Jost,
+  Lora,
+  Montserrat,
+  Playfair_Display,
+  Poppins,
+} from "next/font/google";
 import { cn } from "@/lib/utils";
 
 // Fonts from the V5 design.
@@ -25,6 +32,19 @@ const poppins = Poppins({
   variable: "--font-poppins",
   display: "swap",
 });
+// Fonts specific to the /apply access-gate page (per designer spec).
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  variable: "--font-cormorant",
+  display: "swap",
+});
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-montserrat",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "LiLi M.D. — The Private Club",
@@ -45,6 +65,8 @@ export default function RootLayout({
         lora.variable,
         jost.variable,
         poppins.variable,
+        cormorant.variable,
+        montserrat.variable,
         "font-sans antialiased",
       )}
     >

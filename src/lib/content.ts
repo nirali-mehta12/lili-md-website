@@ -188,6 +188,71 @@ export const foundingTen = {
   image: "/founding-slates.png",
 };
 
+/*
+  Second access gate — /apply. Copy for the doctor-info entry form.
+  Note: this page uses a distinct rose/mauve palette per the designer
+  reference (docs/lili-md-access-gate-page2.html), separate from the
+  main site's gold/wine theme. Palette lives inside the page CSS itself.
+*/
+export const apply = {
+  meta: {
+    title: "Private Access — The Private Club at LiLi M.D.",
+  },
+  heading: "Private Access",
+  intro:
+    "You've been invited. Enter your information below to gain access and discover everything membership has to offer.",
+  fields: {
+    firstName: "First Name",
+    lastName: "Last Name",
+    practiceName: "Practice / Business Name",
+    website: "Practice Website",
+    phone: "Mobile Phone",
+    email: "Email",
+    licenseNo: "Medical License No.",
+    ehrPlaceholder: "Current EHR",
+    referredBy: "Referred By (if applicable)",
+  },
+  ehrOptions: [
+    "Epic",
+    "Oracle Health (Cerner)",
+    "athenahealth",
+    "eClinicalWorks (eCW)",
+    "NextGen Healthcare",
+    "Veradigm (Allscripts)",
+    "Greenway Health",
+    "AdvancedMD",
+    "Tebra (Kareo)",
+    "DrChrono",
+    "Practice Fusion",
+    "Other / Not listed",
+  ],
+  consent:
+    "By requesting access, I confirm I am a U.S.-licensed physician and agree to LiLi M.D.'s communication policies, including receiving SMS messages.",
+  cta: "Request Access",
+  ctaPending: "Submitting…",
+  fineprint: "Your information is kept private and confidential.",
+  footer: "The Private Club at LiLi M.D.",
+  success: {
+    heading: "Access Granted",
+    body: "Welcome to The Private Club at LiLi M.D. Redirecting you to the site…",
+  },
+  // User-facing error messages — kept in one place so tone stays consistent.
+  errors: {
+    missingName: "Please enter your first and last name.",
+    missingContact: "Please enter your email and phone number.",
+    missingFields: "Please complete the required fields.",
+    missingConsent: "Please confirm the consent statement to continue.",
+    invalidEmail: "Please enter a valid email address.",
+    invalidEhr: "Please pick your EHR from the list.",
+    tooLarge: "One of the fields is too long. Please shorten and try again.",
+    rateLimited: "Too many attempts. Please wait a few minutes and try again.",
+    network: "Network error. Please try again.",
+    generic: "Something went wrong. Please try again.",
+    unavailable:
+      "We couldn't process your request right now. Please try again in a minute.",
+  },
+} as const;
+
 export const submit = {
   heading: { line1: "Submit Your Practice", line2: "for Qualification" },
   body: "Because the founding circle is limited to ten independent physicians, entry is by invitation, through a conversation with the founders.",

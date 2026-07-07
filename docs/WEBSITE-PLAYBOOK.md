@@ -58,6 +58,28 @@ I have to swap later.
 - [ ] **Domain** — final URL so SEO meta + canonical tags can be set on day 1.
 - [ ] **Notification email + SMTP credentials** — where form submissions go.
 
+### Designer reference materials (keep in `docs/`)
+
+When the designer sends canonical references, drop them under `docs/` so
+future sessions and teammates can find them. Two kinds we've seen on
+lilimd.ai:
+
+- **Brand system doc** — one artifact defining palette, typography,
+  logo rules, spacing, page anatomy. See
+  [`docs/LiLi_MD_Brand_Guidelines.html`](./LiLi_MD_Brand_Guidelines.html)
+  + [`.pdf`](./LiLi_MD_Brand_Guidelines.pdf). This is the **authoritative**
+  source of truth for colors, fonts, and voice.
+- **Page-level design HTMLs** — designer often ships a working HTML+CSS
+  page (with placeholder JS) for a specific screen. Example:
+  [`docs/lili-md-access-gate-page2.html`](./lili-md-access-gate-page2.html)
+  for the `/apply` doctor-info gate. These are useful because you can
+  literally lift the CSS and copy verbatim into a React component, rather
+  than eyeballing measurements from a Figma frame.
+- **Reconciliation caveat:** a page-level HTML sometimes uses slightly
+  different color values than the brand guide (designer eyeballing the
+  palette for that page in isolation). When they diverge, ask which
+  is canonical — don't guess.
+
 ### Asset versioning & folder convention
 
 Designers iterate. Expect three or four revisions of the hero alone, with

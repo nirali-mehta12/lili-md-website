@@ -12,10 +12,16 @@
 for **The Private Club at LiLi M.D.**, the founding-10 physician cohort of
 LiLi M.D.'s AI-native practice-operations platform.
 
-**One-liner:** the private door to the private club — visitors either arrive
-through a personal invitation from Mel or self-identify as a qualifying
-physician via an application form. Once inside, they see the pitch and can
-formally raise their hand to be considered as a founding member.
+**One-liner:** the private door to the private club — every visitor lands
+on the `/apply` info form, provides their name / practice / license / EHR
++ TCPA consent, and is granted access. Once inside, they see the pitch and
+can raise their hand to formally be considered as a founding member.
+
+> **Note (2026-07-07):** the site previously had a second entry — a
+> `/locked` password page for Mel's personal invites. That flow is
+> **paused** (code preserved, unwired) per Ronnie + Mel. `/apply` is the
+> sole gateway now. The password-page code stays in the repo so we can
+> restore it if needed — see `src/proxy.ts` for the pause point.
 
 ### 1.1 Team & stakeholders
 
@@ -51,9 +57,9 @@ hard-to-target audience. LiLi M.D. needs:
 
 | Segment | Description | How they arrive | What they need |
 |---|---|---|---|
-| **Personal invitee** | A physician Mel personally identified. | Direct message from Mel with a password / one-click link. | Fast entry, feels handpicked. |
+| **Personal invitee** | A physician Mel personally identified. | Direct link to `/apply` from Mel. | Fast entry, feels handpicked. (Password path *paused* — was the previous flow.) |
 | **Outreach doctor** | A physician contacted via outbound campaign or referral. | Direct link to `/apply`. | Legible credibility signals, easy self-verification. |
-| **Investor** | Non-physician evaluating the LiLi M.D. thesis. | Password from Nirali / Mel. | Professional presentation, understands the business model. |
+| **Investor** | Non-physician evaluating the LiLi M.D. thesis. | Direct link to `/apply` from Nirali / Mel. | Professional presentation, understands the business model. |
 
 Total addressable audience for this site is small (dozens to low hundreds).
 Site is not built for scale.
@@ -67,8 +73,9 @@ Site is not built for scale.
 - **G1** — Present the LiLi M.D. value proposition (Work Less, Earn More;
   founding-member benefits; three-tier growth model) in a single
   scrollable page that reads well on mobile + desktop.
-- **G2** — Gate access to the site behind two authenticated entry paths:
-  personal invite (password) and outreach application (info form).
+- **G2** — Gate access to the site behind the `/apply` info-form entry.
+  (Previously there were two entries — the `/locked` password gate is
+  paused as of 2026-07-07; code preserved for future restoration.)
 - **G3** — Capture founding-member applications with enough structured
   information (name, practice, license, EHR, phone, email, referrer) that
   Mel can triage without needing a discovery call for every inquiry.
@@ -93,9 +100,9 @@ Site is not built for scale.
 
 ### Personal invitee (Mel's list)
 
-- **US-1** As a physician who received a personal invitation from Mel, I
-  want to click the invite link and see the site immediately, without
-  entering my email or filling out a form.
+- **US-1** *(paused — was: click a password invite link and see the site
+  immediately without a form).* Currently personal invitees go through
+  `/apply` like everyone else. Restore the password flow to re-enable this.
 - **US-2** As a physician viewing the site, I want to understand who the
   founding-10 are, what I get by joining, and how to formally apply — all
   from a single page.
@@ -177,8 +184,8 @@ Cross-referenced against the numbered SRS requirements for traceability.
 |---|---|---|---|
 | **P1** | 13-section marketing landing page | US-2, US-7 | FR-1 |
 | **P2** | Invitation-only access gate | US-1, US-4, US-11 | FR-2 |
-| **P3** | Password entry for personal invites | US-1 | FR-3 |
-| **P4** | Info-form entry for outreach doctors | US-4, US-5, US-6 | FR-4 |
+| ~~**P3**~~ | ~~Password entry for personal invites~~ **PAUSED 2026-07-07** — code preserved but not wired. | US-1 | FR-3 |
+| **P4** | Info-form entry — sole gateway now | US-4, US-5, US-6 | FR-4 |
 | **P5** | TCPA consent capture (SMS/email opt-in) | US-6 | FR-4.2, FR-4.6, NFR-COMP-1 |
 | **P6** | Landing-page "Submit Your Practice" lead capture | US-3 | FR-5 |
 | **P7** | Admin tool for invite management | US-8, US-10 | FR-6 |
@@ -245,6 +252,22 @@ Cross-referenced against the numbered SRS requirements for traceability.
 | Nirali unavailable + Mel needs a new code | Low | Low | `/admin` self-serve tool + CLI documented in runbook |
 
 ---
+
+## 10.5 Recent design decisions (Ronnie + Mel, 2026-07-07)
+
+- **Password gate paused.** `/locked` is no longer wired into the visitor
+  flow — `/apply` is the sole gateway. Files are preserved in the repo so
+  the flow can be restored later without a rebuild. See `src/proxy.ts`
+  block comment for the pause point.
+- **Landing-page CTA is changing** — currently a full "Submit Your Practice
+  for Qualification" form. Ronnie is sending updated design where this
+  becomes a simple **"Click to be considered"** button (since `/apply`
+  already captures the physician's info at the gate). Implementation
+  waits for Ronnie's design; the form stays as-is in the interim.
+- **Two email alerts** confirmed:
+  1. **Gate entry** (`/apply` submit) — already firing with full detail.
+  2. **"Click to be considered"** button — new alert to be wired when the
+     button lands.
 
 ## 11. Open questions
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { apply } from "@/lib/content";
+import { isValidEmail, isValidPhoneUS } from "@/lib/format";
 
 /**
  * Payload the /apply page collects and posts to /api/apply.
@@ -68,6 +69,14 @@ export function useRequestAccess() {
     }
     if (!payload.email.trim() || !payload.phone.trim()) {
       setError(apply.errors.missingContact);
+      return;
+    }
+    if (!isValidEmail(payload.email)) {
+      setError(apply.errors.invalidEmail);
+      return;
+    }
+    if (!isValidPhoneUS(payload.phone)) {
+      setError(apply.errors.invalidPhone);
       return;
     }
     if (!payload.practiceName.trim() || !payload.licenseNo.trim() || !payload.ehr) {

@@ -4,6 +4,7 @@ import { useState } from "react";
 // import Image from "next/image"; // re-enable with the socials block below
 import { Reveal } from "../ui/Reveal";
 import { submit, apply } from "@/lib/content";
+import { formatPhoneUS, isValidEmail, isValidPhoneUS } from "@/lib/format";
 // import { socials } from "@/lib/content"; // re-enable when socials exist
 
 type Status = "idle" | "loading" | "success" | "error";
@@ -14,6 +15,8 @@ const inputClass =
 export function SubmitForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
+  // Phone is controlled so we can auto-format as the user types.
+  const [phone, setPhone] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -21,6 +24,20 @@ export function SubmitForm() {
     const fd = new FormData(form);
     setStatus("loading");
     setError("");
+
+    // Client-side format checks — fast fail before the network hop.
+    const emailValue = String(fd.get("email") || "");
+    if (!isValidEmail(emailValue)) {
+      setError(apply.errors.invalidEmail);
+      setStatus("error");
+      return;
+    }
+    if (!isValidPhoneUS(phone)) {
+      setError(apply.errors.invalidPhone);
+      setStatus("error");
+      return;
+    }
+
     try {
       const res = await fetch("/api/submit", {
         method: "POST",
@@ -29,7 +46,7 @@ export function SubmitForm() {
           name: fd.get("name"),
           practiceName: fd.get("practiceName"),
           email: fd.get("email"),
-          phone: fd.get("phone"),
+          phone,
           website: fd.get("website"),
           licenseNo: fd.get("licenseNo"),
           ehr: fd.get("ehr"),
@@ -145,6 +162,9 @@ export function SubmitForm() {
                   required
                   inputMode="tel"
                   autoComplete="tel"
+                  maxLength={20}
+                  value={phone}
+                  onChange={(e) => setPhone(formatPhoneUS(e.target.value))}
                   placeholder={submit.fields.phone}
                   className={inputClass}
                 />

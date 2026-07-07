@@ -77,8 +77,11 @@ GCP. All service accounts are keyless (ADC).
   communicate the LiLi M.D. value proposition.
 - **F2 — Invitation-only access gate:** deny unauthenticated visitors,
   redirect them to a lock page.
-- **F3 — Password entry (personal invites):** validate a hashed code and
-  issue a session cookie.
+- **F3 — Password entry (personal invites) — PAUSED 2026-07-07:** flow
+  preserved in code (`src/app/locked/*`, `src/app/api/access/*`,
+  `src/lib/invites.ts`, `/admin` tool) but no longer wired into the
+  visitor gate. `/apply` is the sole entry point now. Restore by
+  reverting the commented block in `src/proxy.ts`.
 - **F4 — Info-form entry (outreach doctors):** collect verifying info,
   persist it, notify admin, issue a session cookie.
 - **F5 — Landing-page lead capture:** collect + persist practice-submission
@@ -171,19 +174,25 @@ uses its own rose/mauve palette per designer spec).
 ### FR-2 — Access gate
 
 - **FR-2.1** [MUST] When `ACCESS_GATE_ENABLED === "true"`, every request to any non-exempt path SHALL be checked for a valid `lili_access` cookie.
-- **FR-2.2** [MUST] Exempt paths from the gate SHALL be: `/locked`, `/apply`, `/admin/*`, and any `/api/*`.
-- **FR-2.3** [MUST] Invalid or missing cookie SHALL cause the response to be rewritten to `/locked` with the URL preserved.
+- **FR-2.2** [MUST] Exempt paths from the gate SHALL be: `/apply`, `/admin/*`, and any `/api/*`. *(`/locked` was previously exempted; that exemption is commented out as of 2026-07-07 alongside the password gate pause.)*
+- **FR-2.3** [MUST] Invalid or missing cookie SHALL cause the response to be rewritten to `/apply` with the URL preserved. *(Was `/locked` prior to 2026-07-07.)*
 - **FR-2.4** [MUST] Gated responses SHALL carry `Cache-Control: private, no-store, must-revalidate` to prevent CDN caching one visitor's rendered output for another.
 - **FR-2.5** [MUST] The gated home page SHALL be `export const dynamic = "force-dynamic"`.
-- **FR-2.6** [MUST] `?c=CODE` on any URL SHALL redirect to `/api/access?c=CODE&next=<path>` to validate the code and set the cookie in one hop.
-- **FR-2.7** [SHOULD] Session TTL SHALL be 7 days for both entry paths (`/locked` and `/apply`) — no silent divergence.
+- **FR-2.6** *(PAUSED 2026-07-07)* `?c=CODE` one-click invite handling is commented out in `src/proxy.ts` alongside the password gate. Preserved to restore later.
+- **FR-2.7** [SHOULD] Session TTL SHALL be 7 days — currently only `/apply` issues sessions (`/locked` password flow is paused).
 
-### FR-3 — Password entry (`/locked`)
+### FR-3 — Password entry (`/locked`) — **PAUSED 2026-07-07**
 
-- **FR-3.1** [MUST] `POST /api/access { code }` SHALL SHA-256-hash the provided code and look it up in Firestore `invites` by `codeHash`.
-- **FR-3.2** [MUST] Invalid, revoked, or expired codes SHALL return HTTP 401 with a generic error message (do not leak which of the three).
-- **FR-3.3** [MUST] Successful validation SHALL increment `accessCount`, update `lastAccessAt` and `lastAccessIp` on the invite doc, then set the session cookie.
-- **FR-3.4** [MUST] Endpoint SHALL rate-limit per client IP: 10 attempts per 10-minute sliding window.
+*The requirements below describe how the password gate is implemented, but the
+flow is no longer wired into the visitor experience. `/apply` is the sole
+gateway. Code preserved (`src/app/locked/*`, `src/app/api/access/route.ts`,
+`src/lib/invites.ts`, `scripts/invite.mjs`, `/admin` invite management tool)
+so the flow can be restored by reverting the pause block in `src/proxy.ts`.*
+
+- **FR-3.1** [MUST when active] `POST /api/access { code }` SHALL SHA-256-hash the provided code and look it up in Firestore `invites` by `codeHash`.
+- **FR-3.2** [MUST when active] Invalid, revoked, or expired codes SHALL return HTTP 401 with a generic error message (do not leak which of the three).
+- **FR-3.3** [MUST when active] Successful validation SHALL increment `accessCount`, update `lastAccessAt` and `lastAccessIp` on the invite doc, then set the session cookie.
+- **FR-3.4** [MUST when active] Endpoint SHALL rate-limit per client IP: 10 attempts per 10-minute sliding window.
 
 ### FR-4 — Info-form entry (`/apply`)
 
@@ -250,6 +259,7 @@ uses its own rose/mauve palette per designer spec).
 - **NFR-OBS-2** [MUST] Handled errors SHALL log at ERROR severity; unhandled or user-blocking failures at CRITICAL.
 - **NFR-OBS-3** [MUST] Cloud Error Reporting SHALL auto-detect ERROR + CRITICAL entries without additional SDK integration.
 - **NFR-OBS-4** [SHOULD] Uptime probes SHALL hit `/api/health` at regular intervals; deep probes hit `?depth=deep`.
+- **NFR-OBS-5** [MUST] All `WARN`, `ERROR`, and `CRITICAL` log lines SHALL be dual-written to Firestore `app-events` collection (best-effort — a Firestore write failure MUST NOT block or delay the user request). Rationale: Cloud Logging access requires gcloud reauth which breaks the "just check the logs" workflow. `app-events` is queryable from the same Firebase Console that hosts `leads` / `doctor-applications`, no reauth needed.
 
 ### NFR-Compliance
 
@@ -293,7 +303,27 @@ uses its own rose/mauve palette per designer spec).
 | `createdAt` | string (ISO) | Server |
 | `ip` | string | Server |
 
-### 6.3 `doctor-applications` (Firestore)
+### 6.3 `app-events` (Firestore)
+
+Structured log entries at severity WARN/ERROR/CRITICAL, dual-written by
+`@/lib/log`. Queryable directly from Firebase Console for debugging without
+requiring a gcloud reauth.
+
+| Field | Type | Purpose |
+|---|---|---|
+| `severity` | `"WARN"` \| `"ERROR"` \| `"CRITICAL"` | Cloud-Logging-compatible severity |
+| `event` | string | Short kebab-case event name (e.g. `apply.email_send_failed`) |
+| `ts` | string (ISO) | Server timestamp |
+| `cid` | string \| undefined | Correlation ID linking multiple lines from one flow |
+| `error.name / message / stack` | strings | Present when the caller passed an `err` field |
+| ...arbitrary | any | Any other fields the caller passed (ip, docId, etc.) |
+
+Common queries (Firebase Console → Firestore → `app-events`):
+- "Recent errors" — where `severity == "ERROR"`, order by `ts` desc
+- "Trace one flow" — where `cid == "abc123"`, order by `ts` asc
+- "Email failures" — where `event == "apply.email_send_failed"`
+
+### 6.4 `doctor-applications` (Firestore)
 
 | Field | Type | Source |
 |---|---|---|
@@ -464,6 +494,8 @@ Edit `apphosting.yaml`, flip `ACCESS_GATE_ENABLED` to `"true"` or `"false"`, com
 |---|---|---|---|
 | 1.0 | 2026-07-06 | Initial SRS (converted from earlier ARCHITECTURE.md) | Nirali + AI |
 | 1.1 | 2026-07-06 | Mel locked Q1 (Instant) + Q2 (both-with-one-liner-on-gate). FR-4.1 EHR whitelist grew from 12 → 85 options (Mel's real list, `docs/ehr_dropdown.json`). FR-5.1 landing form grew to 9 fields (added License/EHR/ReferredBy per Ronnie). FR-4.7 gate notification is now a one-liner; FR-5.5 codifies landing notification as full detail. | Nirali + AI |
+| 1.2 | 2026-07-07 | Password gate (`/locked`) **paused** — code preserved but no longer wired into the visitor flow. `/apply` is the sole gateway. FR-3.* marked "when active". FR-2.2 / FR-2.3 / FR-2.6 updated. F3 in overview marked paused. Landing-page CTA is scheduled to change to a "Click to be considered" button when Ronnie's design lands — that will introduce a second alert type. `/apply` gate email upgraded from one-liner to full-detail (still triggered on every gate submission). | Nirali + AI |
+| 1.3 | 2026-07-07 | Added `NFR-OBS-5`: structured logger now dual-writes WARN+ entries to Firestore `app-events` so ops can inspect errors without a gcloud reauth. Added §6.3 `app-events` data model. Also added shared US phone / email format validation (client + server) — bad phones and emails are now rejected with a 400 on both `/apply` and the landing form. | Nirali + AI |
 
 ---
 

@@ -319,6 +319,7 @@ export const apply = {
     missingFields: "Please complete the required fields.",
     missingConsent: "Please confirm the consent statement to continue.",
     invalidEmail: "Please enter a valid email address.",
+    invalidPhone: "Please enter a 10-digit US phone number.",
     invalidEhr: "Please pick your EHR from the list.",
     tooLarge: "One of the fields is too long. Please shorten and try again.",
     rateLimited: "Too many attempts. Please wait a few minutes and try again.",

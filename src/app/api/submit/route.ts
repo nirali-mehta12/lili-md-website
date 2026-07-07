@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getDb } from "@/lib/firebase";
 import { sendLeadNotification } from "@/lib/email";
+import { isValidEmail, isValidPhoneUS } from "@/lib/format";
 
 /*
   POST /api/submit  — handles the "Submit Your Practice" form.
@@ -36,9 +37,6 @@ function isRateLimited(ip: string): boolean {
   return recent.length > MAX_PER_WINDOW;
 }
 
-function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
 
 export async function POST(request: NextRequest) {
   let body: Record<string, unknown>;
@@ -86,6 +84,12 @@ export async function POST(request: NextRequest) {
   if (!isValidEmail(email)) {
     return NextResponse.json(
       { error: "Please enter a valid email address." },
+      { status: 400 },
+    );
+  }
+  if (!isValidPhoneUS(phone)) {
+    return NextResponse.json(
+      { error: "Please enter a 10-digit US phone number." },
       { status: 400 },
     );
   }

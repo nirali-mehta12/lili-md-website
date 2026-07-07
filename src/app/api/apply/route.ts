@@ -5,6 +5,7 @@ import { signSession, SESSION_COOKIE, verifySession } from "@/lib/session";
 import { sendDoctorApplicationNotification } from "@/lib/email";
 import { log, correlationId } from "@/lib/log";
 import { apply } from "@/lib/content";
+import { isValidEmail, isValidPhoneUS } from "@/lib/format";
 
 /*
   ============================================================
@@ -82,13 +83,6 @@ function clientIp(req: NextRequest): string {
   // On GCP LB: [supplied?, ..., real-client, gclb-proxy]. Pick second-to-last
   // when the chain has >= 2 hops, otherwise the only value.
   return parts.length >= 2 ? parts[parts.length - 2] : parts[0];
-}
-
-/**
- * @returns `true` when the string matches a very permissive email pattern.
- */
-function isValidEmail(s: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 }
 
 /**
@@ -222,6 +216,12 @@ export async function POST(request: NextRequest) {
       { status: 400 },
     );
   }
+  if (!isValidPhoneUS(application.phone)) {
+    return NextResponse.json(
+      { ok: false, error: apply.errors.invalidPhone },
+      { status: 400 },
+    );
+  }
   if (!EHR_WHITELIST.has(application.ehr)) {
     log.warn("apply.ehr_not_whitelisted", { cid, ip, ehr: application.ehr });
     return NextResponse.json(
@@ -282,7 +282,15 @@ export async function POST(request: NextRequest) {
 
   // 6. Mint an invite so the same code path as /locked owns the session.
   //    In manual mode we'd email this code to Mel instead of setting cookie.
-  const invite = await createInvite({ label, ttlDays: INVITE_TTL_DAYS });
+  //    createInvite can either return null (getDb null) or throw (Firestore
+  //    reachable but the write failed, e.g. expired ADC locally) — both are
+  //    the same user-visible failure, so unify them under a 503.
+  let invite: Awaited<ReturnType<typeof createInvite>> = null;
+  try {
+    invite = await createInvite({ label, ttlDays: INVITE_TTL_DAYS });
+  } catch (err) {
+    log.error("apply.invite_creation_threw", { cid, err });
+  }
   if (!invite) {
     log.error("apply.invite_creation_failed", { cid });
     return NextResponse.json(

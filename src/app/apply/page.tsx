@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { apply } from "@/lib/content";
+import { formatPhoneUS } from "@/lib/format";
 import { useRequestAccess } from "./use-request-access";
 
 /*
@@ -422,9 +423,9 @@ export default function ApplyPage() {
                     <input
                       type="tel"
                       required
-                      maxLength={200}
+                      maxLength={20}
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      onChange={(e) => setPhone(formatPhoneUS(e.target.value))}
                       placeholder={apply.fields.phone}
                       aria-label={apply.fields.phone}
                       inputMode="tel"

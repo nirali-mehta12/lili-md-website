@@ -1,21 +1,33 @@
 /*
   ============================================================
-  Minimal structured logger (server-only)
+  Structured logger with dual-write (server-only)
   ------------------------------------------------------------
-  Cloud Logging (which App Hosting forwards stdout/stderr to) recognizes
-  JSON payloads with a `severity` field and auto-classifies them. Logging
-  as JSON via this helper gives us:
+  Every log line goes to TWO places:
 
-    - filterable severity levels (INFO / WARN / ERROR / CRITICAL)
-    - Cloud Error Reporting auto-detection on ERROR + CRITICAL
-    - queryable event names via the `event` field
-    - structured payload fields (no regex parsing at query time)
+    1. stdout as JSON → Cloud Logging picks it up automatically.
+       Cloud Error Reporting auto-detects ERROR + CRITICAL severity.
+       Queryable via `gcloud logging read` or the Firebase Console →
+       App Hosting → Logs tab. Retention: 30 days free.
+
+    2. Firestore `app-events` collection (WARN / ERROR / CRITICAL only)
+       — a durable record queryable from the same Firebase Console
+       everyone already uses for `leads` / `doctor-applications`. No
+       gcloud reauth required to view. Retention: forever (until pruned).
+
+  Why the dual-write:
+    Cloud Logging access requires an interactive gcloud reauth every
+    time the token drifts. In practice that made "just check the logs"
+    a 15-minute chore. Firestore is trivial to query from any
+    Firebase-authed context (console, MCP, or the /admin tool later).
+
+  Cost note: Firestore writes on the free tier allow 20K/day. Even
+  aggressive validation-warning volume stays well inside that.
 
   Usage:
     import { log } from "@/lib/log";
-    log.info("apply.request_received", { ip, ua });
-    log.warn("apply.rate_limited", { ip });
-    log.error("apply.firestore_write_failed", { err, docId });
+    log.info("apply.request_received", { ip, cid });   // → stdout only
+    log.warn("apply.rate_limited", { ip, cid });       // → stdout + Firestore
+    log.error("apply.email_send_failed", { err, cid }); // → stdout + Firestore
 
   Requesting a `correlationId` up-front lets one submission be traced
   across DB write, email send, and cookie set — useful when a support
@@ -23,11 +35,36 @@
   ============================================================
 */
 
+import { getDb } from "@/lib/firebase";
+
 type Severity = "DEBUG" | "INFO" | "WARN" | "ERROR" | "CRITICAL";
 
 type Payload = Record<string, unknown> & {
   err?: unknown;
 };
+
+const APP_EVENTS_COLLECTION = "app-events";
+
+/**
+ * Best-effort Firestore write for a log entry.
+ * Never throws — the logger must not itself be a source of unhandled errors.
+ * Never blocks — fires async and lets the caller move on.
+ */
+function persistToFirestore(entry: Record<string, unknown>): void {
+  try {
+    const db = getDb();
+    if (!db) return; // Placeholder mode or Firebase unconfigured — stdout is enough.
+    // Don't await — the caller doesn't need to wait for the log write.
+    db.collection(APP_EVENTS_COLLECTION)
+      .add(entry)
+      .catch(() => {
+        // Firestore write failed (auth expired, quota, network) — silent.
+        // The stdout log already fired; we've done what we can.
+      });
+  } catch {
+    // getDb() itself threw somehow — silent.
+  }
+}
 
 /**
  * Emit a single structured log line.
@@ -49,7 +86,8 @@ function emit(severity: Severity, event: string, payload: Payload = {}): void {
   } else if (err !== undefined) {
     entry.error = { value: String(err) };
   }
-  // Serialize once — Cloud Logging parses the whole line as JSON.
+  // 1. Serialize once and print to stdout — Cloud Logging parses the whole
+  //    line as JSON and classifies by the `severity` field.
   const line = JSON.stringify(entry);
   if (severity === "ERROR" || severity === "CRITICAL") {
     console.error(line);
@@ -57,6 +95,13 @@ function emit(severity: Severity, event: string, payload: Payload = {}): void {
     console.warn(line);
   } else {
     console.log(line);
+  }
+  // 2. Persist WARN+ entries to Firestore so they're queryable from
+  //    Firebase Console without a gcloud reauth. Skip DEBUG/INFO — those
+  //    would be noisy in Firestore and are only useful for step-through
+  //    diagnostics via Cloud Logging.
+  if (severity === "WARN" || severity === "ERROR" || severity === "CRITICAL") {
+    persistToFirestore(entry);
   }
 }
 

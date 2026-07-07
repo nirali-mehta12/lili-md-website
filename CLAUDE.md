@@ -126,6 +126,14 @@ terminal, not a non-interactive tool shell. Config files are written by hand her
   (and the `NOTIFY_EMAIL` / `MAIL_COLLECTION` vars) need to be set as backend env vars.
 - Point the custom domain (provided by Nirali) at the App Hosting backend.
 
+> **Deploy workflow rule (Nirali, 2026-07-06):** `git push origin main` = live
+> in prod at lilimd.ai within ~5–10 min. **Never push to `main` without
+> explicit approval.** When Nirali asks for code changes, the default is:
+> edit → typecheck → screenshot-verify locally → **STOP** and report. She
+> reviews in dev before saying "commit" (local only) or "push"/"deploy"
+> (which triggers the rollout). If uncertain, ask: *"want me to commit + push,
+> or hold for your dev review first?"*
+
 ---
 
 ## Conventions

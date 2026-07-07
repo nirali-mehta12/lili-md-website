@@ -1,0 +1,346 @@
+{
+  "field": "current_ehr",
+  "label": "Which EHR does your practice currently use?",
+  "options": [
+    {
+      "value": "eclinicalworks",
+      "label": "eClinicalWorks"
+    },
+    {
+      "value": "athenahealth",
+      "label": "athenahealth"
+    },
+    {
+      "value": "epic",
+      "label": "Epic"
+    },
+    {
+      "value": "nextgen_healthcare",
+      "label": "NextGen Healthcare"
+    },
+    {
+      "value": "greenway_health",
+      "label": "Greenway Health"
+    },
+    {
+      "value": "practice_fusion",
+      "label": "Practice Fusion"
+    },
+    {
+      "value": "advancedmd",
+      "label": "AdvancedMD"
+    },
+    {
+      "value": "tebra_kareo",
+      "label": "Tebra (Kareo)"
+    },
+    {
+      "value": "drchrono",
+      "label": "DrChrono"
+    },
+    {
+      "value": "curemd",
+      "label": "CureMD"
+    },
+    {
+      "value": "elation_health",
+      "label": "Elation Health"
+    },
+    {
+      "value": "modmed_modernizing_medicine",
+      "label": "ModMed (Modernizing Medicine)"
+    },
+    {
+      "value": "oracle_health_cerner",
+      "label": "Oracle Health (Cerner)"
+    },
+    {
+      "value": "meditech",
+      "label": "MEDITECH"
+    },
+    {
+      "value": "allscripts__veradigm",
+      "label": "Allscripts / Veradigm"
+    },
+    {
+      "value": "nextech",
+      "label": "Nextech"
+    },
+    {
+      "value": "ezderm",
+      "label": "Ezderm"
+    },
+    {
+      "value": "ema__modmed_derm",
+      "label": "EMA / ModMed Derm"
+    },
+    {
+      "value": "simplepractice",
+      "label": "SimplePractice"
+    },
+    {
+      "value": "therapynotes",
+      "label": "TherapyNotes"
+    },
+    {
+      "value": "theranest__ensora",
+      "label": "TheraNest / Ensora"
+    },
+    {
+      "value": "kipu",
+      "label": "Kipu"
+    },
+    {
+      "value": "webpt",
+      "label": "WebPT"
+    },
+    {
+      "value": "spry",
+      "label": "SPRY"
+    },
+    {
+      "value": "prompt_emr",
+      "label": "Prompt EMR"
+    },
+    {
+      "value": "dentrix",
+      "label": "Dentrix"
+    },
+    {
+      "value": "dentrix_ascend",
+      "label": "Dentrix Ascend"
+    },
+    {
+      "value": "eaglesoft",
+      "label": "Eaglesoft"
+    },
+    {
+      "value": "open_dental",
+      "label": "Open Dental"
+    },
+    {
+      "value": "curve_dental",
+      "label": "Curve Dental"
+    },
+    {
+      "value": "edvak",
+      "label": "Edvak"
+    },
+    {
+      "value": "prognocis",
+      "label": "PrognoCIS"
+    },
+    {
+      "value": "omnimd",
+      "label": "OmniMD"
+    },
+    {
+      "value": "experity",
+      "label": "Experity"
+    },
+    {
+      "value": "office_ally",
+      "label": "Office Ally"
+    },
+    {
+      "value": "rxnt",
+      "label": "RXNT"
+    },
+    {
+      "value": "netsmart",
+      "label": "Netsmart"
+    },
+    {
+      "value": "valant",
+      "label": "Valant"
+    },
+    {
+      "value": "qualifacts",
+      "label": "Qualifacts"
+    },
+    {
+      "value": "icanotes",
+      "label": "ICANotes"
+    },
+    {
+      "value": "kalix",
+      "label": "Kalix"
+    },
+    {
+      "value": "jane_app",
+      "label": "Jane App"
+    },
+    {
+      "value": "power2practice",
+      "label": "Power2Practice"
+    },
+    {
+      "value": "4d_emr",
+      "label": "4D EMR"
+    },
+    {
+      "value": "patientnow",
+      "label": "PatientNow"
+    },
+    {
+      "value": "wrs_health",
+      "label": "WRS Health"
+    },
+    {
+      "value": "compulink",
+      "label": "Compulink"
+    },
+    {
+      "value": "encounterworks",
+      "label": "EncounterWorks"
+    },
+    {
+      "value": "isalus",
+      "label": "iSalus"
+    },
+    {
+      "value": "azalea_health",
+      "label": "Azalea Health"
+    },
+    {
+      "value": "intergy_greenway",
+      "label": "Intergy (Greenway)"
+    },
+    {
+      "value": "praxis_emr",
+      "label": "Praxis EMR"
+    },
+    {
+      "value": "amazing_charts",
+      "label": "Amazing Charts"
+    },
+    {
+      "value": "mdtoolbox",
+      "label": "MDToolbox"
+    },
+    {
+      "value": "sevocity",
+      "label": "Sevocity"
+    },
+    {
+      "value": "chartlogic",
+      "label": "ChartLogic"
+    },
+    {
+      "value": "modernizing_medicine_ema",
+      "label": "Modernizing Medicine EMA"
+    },
+    {
+      "value": "trubridge_cpsi__evident",
+      "label": "TruBridge (CPSI) / Evident"
+    },
+    {
+      "value": "altera_sunrise",
+      "label": "Altera (Sunrise)"
+    },
+    {
+      "value": "medhost",
+      "label": "Medhost"
+    },
+    {
+      "value": "netsmart_myunity",
+      "label": "Netsmart myUnity"
+    },
+    {
+      "value": "foothold_awards",
+      "label": "Foothold AWARDS"
+    },
+    {
+      "value": "openemr",
+      "label": "OpenEMR"
+    },
+    {
+      "value": "epic_community_connect",
+      "label": "Epic Community Connect"
+    },
+    {
+      "value": "ge_healthcare_centricity",
+      "label": "GE Healthcare Centricity"
+    },
+    {
+      "value": "medent",
+      "label": "MEDENT"
+    },
+    {
+      "value": "emds_compugroup",
+      "label": "eMDs (CompuGroup)"
+    },
+    {
+      "value": "compugroup_medical",
+      "label": "CompuGroup Medical"
+    },
+    {
+      "value": "insync",
+      "label": "InSync"
+    },
+    {
+      "value": "nextech_ophthalmology",
+      "label": "Nextech Ophthalmology"
+    },
+    {
+      "value": "bizmatics",
+      "label": "Bizmatics"
+    },
+    {
+      "value": "micromd",
+      "label": "MicroMD"
+    },
+    {
+      "value": "optimantra",
+      "label": "Optimantra"
+    },
+    {
+      "value": "deepscribe-linked_ehr",
+      "label": "DeepScribe-linked EHR"
+    },
+    {
+      "value": "canvas_medical",
+      "label": "Canvas Medical"
+    },
+    {
+      "value": "akute_health",
+      "label": "Akute Health"
+    },
+    {
+      "value": "elation_dpc",
+      "label": "Elation (DPC)"
+    },
+    {
+      "value": "cerbo",
+      "label": "Cerbo"
+    },
+    {
+      "value": "charm_health",
+      "label": "Charm Health"
+    },
+    {
+      "value": "drcloudehr",
+      "label": "DrCloudEHR"
+    },
+    {
+      "value": "mdvision",
+      "label": "MDVision"
+    },
+    {
+      "value": "waystar-linked",
+      "label": "Waystar-linked"
+    },
+    {
+      "value": "other_not_listed",
+      "label": "Other (not listed)"
+    },
+    {
+      "value": "no_ehr__paper",
+      "label": "No EHR / paper"
+    },
+    {
+      "value": "not_sure",
+      "label": "Not sure"
+    }
+  ]
+}

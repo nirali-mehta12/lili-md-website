@@ -1,0 +1,94 @@
+EHR DROPDOWN LIST — for LiLi MD landing page
+Field label: "Which EHR does your practice currently use?"
+Total options: 85
+
+== MOST COMMON (surface at top) ==
+  eClinicalWorks
+  athenahealth
+  Epic
+  NextGen Healthcare
+  Greenway Health
+  Practice Fusion
+  AdvancedMD
+  Tebra (Kareo)
+  DrChrono
+  CureMD
+  Elation Health
+  ModMed (Modernizing Medicine)
+  Oracle Health (Cerner)
+  MEDITECH
+  Allscripts / Veradigm
+
+== SPECIALTY & MID-TIER ==
+  Nextech
+  Ezderm
+  EMA / ModMed Derm
+  SimplePractice
+  TherapyNotes
+  TheraNest / Ensora
+  Kipu
+  WebPT
+  SPRY
+  Prompt EMR
+  Dentrix
+  Dentrix Ascend
+  Eaglesoft
+  Open Dental
+  Curve Dental
+  Edvak
+  PrognoCIS
+  OmniMD
+  Experity
+  Office Ally
+  RXNT
+  Netsmart
+  Valant
+  Qualifacts
+  ICANotes
+  Kalix
+  Jane App
+  Power2Practice
+  4D EMR
+  PatientNow
+  WRS Health
+  Compulink
+  EncounterWorks
+  iSalus
+  Azalea Health
+  Intergy (Greenway)
+  Praxis EMR
+  Amazing Charts
+  MDToolbox
+  Sevocity
+  ChartLogic
+  Modernizing Medicine EMA
+  TruBridge (CPSI) / Evident
+  Altera (Sunrise)
+  Medhost
+  Netsmart myUnity
+  Foothold AWARDS
+  OpenEMR
+  Epic Community Connect
+  GE Healthcare Centricity
+  MEDENT
+
+== LONG TAIL + CATCH-ALL (keep at bottom) ==
+  eMDs (CompuGroup)
+  CompuGroup Medical
+  InSync
+  Nextech Ophthalmology
+  Bizmatics
+  MicroMD
+  Optimantra
+  DeepScribe-linked EHR
+  Canvas Medical
+  Akute Health
+  Elation (DPC)
+  Cerbo
+  Charm Health
+  DrCloudEHR
+  MDVision
+  Waystar-linked
+  Other (not listed)
+  No EHR / paper
+  Not sure

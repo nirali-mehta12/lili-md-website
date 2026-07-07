@@ -3,7 +3,7 @@
 import { useState } from "react";
 // import Image from "next/image"; // re-enable with the socials block below
 import { Reveal } from "../ui/Reveal";
-import { submit } from "@/lib/content";
+import { submit, apply } from "@/lib/content";
 // import { socials } from "@/lib/content"; // re-enable when socials exist
 
 type Status = "idle" | "loading" | "success" | "error";
@@ -31,6 +31,9 @@ export function SubmitForm() {
           email: fd.get("email"),
           phone: fd.get("phone"),
           website: fd.get("website"),
+          licenseNo: fd.get("licenseNo"),
+          ehr: fd.get("ehr"),
+          referredBy: fd.get("referredBy"),
           message: fd.get("message"),
           company: fd.get("company"), // honeypot
         }),
@@ -152,6 +155,35 @@ export function SubmitForm() {
                 inputMode="url"
                 autoComplete="url"
                 placeholder={submit.fields.website}
+                className={inputClass}
+              />
+              <input
+                type="text"
+                name="licenseNo"
+                autoCapitalize="characters"
+                autoCorrect="off"
+                placeholder={submit.fields.licenseNo}
+                className={inputClass}
+              />
+              <select
+                name="ehr"
+                defaultValue=""
+                className={`${inputClass} appearance-none uppercase tracking-wider`}
+                aria-label={submit.fields.ehrPlaceholder}
+              >
+                <option value="" disabled>
+                  {submit.fields.ehrPlaceholder}
+                </option>
+                {apply.ehrOptions.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="text"
+                name="referredBy"
+                placeholder={submit.fields.referredBy}
                 className={inputClass}
               />
               <textarea

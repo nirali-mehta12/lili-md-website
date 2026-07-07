@@ -187,23 +187,24 @@ uses its own rose/mauve palette per designer spec).
 
 ### FR-4 — Info-form entry (`/apply`)
 
-- **FR-4.1** [MUST] The form SHALL collect these fields: First Name, Last Name, Practice / Business Name, Practice Website (optional), Mobile Phone, Email, Medical License No., Current EHR (from a 12-option whitelist), Referred By (optional).
+- **FR-4.1** [MUST] The form SHALL collect these fields: First Name, Last Name, Practice / Business Name, Practice Website (optional), Mobile Phone, Email, Medical License No., Current EHR (from the 85-option list in `apply.ehrOptions`, per `docs/ehr_dropdown.json`), Referred By (optional).
 - **FR-4.2** [MUST] The form SHALL present a consent checkbox with the exact copy in `apply.consent` in content.ts. The submit button SHALL be disabled while the checkbox is unchecked.
 - **FR-4.3** [MUST] `POST /api/apply` SHALL type-guard the body and reject primitives / arrays / null with HTTP 400.
 - **FR-4.4** [MUST] Every text field SHALL be capped at 200 chars; the URL field at 500 chars. Oversize inputs SHALL return HTTP 400.
 - **FR-4.5** [MUST] The `ehr` value SHALL be validated against `apply.ehrOptions`. Non-whitelist values SHALL return HTTP 400.
 - **FR-4.6** [MUST] `consent === true` SHALL be validated server-side and persisted as `consent: true, consentAt: <ISO>` on the Firestore doc. Server SHALL reject with HTTP 400 if false or missing.
-- **FR-4.7** [MUST] On success the endpoint SHALL: persist the application to `doctor-applications`, mint an invite via `createInvite`, AWAIT the admin notification email, and set the session cookie.
+- **FR-4.7** [MUST] On success the endpoint SHALL: persist the application to `doctor-applications`, mint an invite via `createInvite`, AWAIT the admin notification email (a **short one-liner** per Mel's answer C, 2026-07-06 — `[Gate] <Name> · <Practice>` subject + a 1-line body pointing to Firestore for the full record), and set the session cookie.
 - **FR-4.8** [MUST] Endpoint SHALL rate-limit per client IP: 6 attempts per 10-minute sliding window.
 - **FR-4.9** [MUST] An already-authenticated visitor submitting `/apply` SHALL receive `{ok:true, alreadyAuthenticated:true}` without creating a duplicate invite or duplicate notification email.
 - **FR-4.10** [MUST] If `createInvite` returns `null` (Firestore unreachable or misconfigured), endpoint SHALL respond HTTP 503 with a friendly message and NOT set the session cookie.
 
 ### FR-5 — Lead capture (`/api/submit`)
 
-- **FR-5.1** [MUST] The landing form SHALL collect: Name, Practice Name, Email, Phone, Practice Website, Message.
+- **FR-5.1** [MUST] The landing form SHALL collect: Name, Practice Name, Email, Phone, Practice Website, Medical License No., Current EHR, Referred By, Message. Medical License / EHR / Referred By are optional so investors (non-physicians) can still submit; they exist for consistency with the `/apply` gate form (per designer Ronnie, 2026-07-06).
 - **FR-5.2** [MUST] Server SHALL validate email format + honeypot field ("company") + rate-limit before persisting.
-- **FR-5.3** [MUST] On success the endpoint SHALL persist to `leads` + await the admin notification email.
+- **FR-5.3** [MUST] On success the endpoint SHALL persist to `leads` + await the full admin notification email.
 - **FR-5.4** [SHOULD] When SMTP is not configured, endpoint SHALL still return 200 (record persists) and log at WARN level.
+- **FR-5.5** [MUST] Notification email SHALL be the **full detailed** template (Mel's answer C, 2026-07-06) — includes every field the doctor submitted.
 
 ### FR-6 — Admin tool (`/admin`)
 
@@ -288,7 +289,7 @@ uses its own rose/mauve palette per designer spec).
 
 | Field | Type | Source |
 |---|---|---|
-| `name`, `practiceName`, `email`, `phone`, `website`, `socials`, `message` | string | Landing page form |
+| `name`, `practiceName`, `email`, `phone`, `website`, `licenseNo`, `ehr`, `referredBy`, `socials`, `message` | string | Landing page form |
 | `createdAt` | string (ISO) | Server |
 | `ip` | string | Server |
 
@@ -462,6 +463,7 @@ Edit `apphosting.yaml`, flip `ACCESS_GATE_ENABLED` to `"true"` or `"false"`, com
 | Version | Date | Change | Author |
 |---|---|---|---|
 | 1.0 | 2026-07-06 | Initial SRS (converted from earlier ARCHITECTURE.md) | Nirali + AI |
+| 1.1 | 2026-07-06 | Mel locked Q1 (Instant) + Q2 (both-with-one-liner-on-gate). FR-4.1 EHR whitelist grew from 12 → 85 options (Mel's real list, `docs/ehr_dropdown.json`). FR-5.1 landing form grew to 9 fields (added License/EHR/ReferredBy per Ronnie). FR-4.7 gate notification is now a one-liner; FR-5.5 codifies landing notification as full detail. | Nirali + AI |
 
 ---
 

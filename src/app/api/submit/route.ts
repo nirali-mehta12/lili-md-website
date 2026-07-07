@@ -71,6 +71,9 @@ export async function POST(request: NextRequest) {
   const email = String(body.email || "").trim();
   const phone = String(body.phone || "").trim();
   const website = String(body.website || "").trim();
+  const licenseNo = String(body.licenseNo || "").trim();
+  const ehr = String(body.ehr || "").trim();
+  const referredBy = String(body.referredBy || "").trim();
   const socials = String(body.socials || "").trim();
   const message = String(body.message || "").trim();
 
@@ -93,6 +96,9 @@ export async function POST(request: NextRequest) {
     email,
     phone,
     website,
+    licenseNo,
+    ehr,
+    referredBy,
     socials,
     message,
     createdAt: new Date().toISOString(),

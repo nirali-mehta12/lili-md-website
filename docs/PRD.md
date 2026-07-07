@@ -248,14 +248,26 @@ Cross-referenced against the numbered SRS requirements for traceability.
 
 ## 11. Open questions
 
-- **Q1** — Instant vs Manual review for `/apply`? Draft message to Mel is
-  ready; awaiting his response. (See SRS §4.4.7 and Runbook.)
-- **Q2** — Notification cadence: per-submission or daily digest? Currently
-  per-submission via email; digest could be added later if inbox volume
-  becomes an issue.
-- **Q3** — Sunset plan: when the 10 founding members are secured, does
-  this site go offline, transform into a member portal, or stay as an
+- **Q1 (RESOLVED 2026-07-06)** — Instant vs Manual review for `/apply`?
+  **Mel: A (Instant).** Doctor submits the form → immediate access.
+  Implemented in `src/app/api/apply/route.ts` (setSession + 7-day cookie).
+- **Q2 (RESOLVED 2026-07-06)** — When does Mel get notified?
+  **Mel: C (Both).** Every `/apply` gate entry produces a short one-liner
+  email (`[Gate] <Name> · <Practice>`); every landing-page "Submit Your
+  Practice" form submission produces the full detailed email. Landing form
+  also captures Medical License / EHR / Referred By so both forms are
+  consistent.
+- **Q3 (Deferred)** — Sunset plan: when the 10 founding members are secured,
+  does this site go offline, transform into a member portal, or stay as an
   investor reference? Deferred until milestone M7.
+
+**Ronnie's note (2026-07-06):** the `/apply` page is *publicly accessible*
+(anyone with the URL can visit it) but is shared only via personal outreach
+links — the site itself never navigates to `/apply` and it stays out of the
+public nav. This is by design: the gate captures who came in, but the URL
+isn't a secret. If we later want per-outreach attribution (which doctor
+came from which campaign), we'd add a query-param token like
+`/apply?ref=<campaign-code>`; not scoped for MVP.
 
 ---
 

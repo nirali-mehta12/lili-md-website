@@ -1,238 +1,179 @@
 "use client";
 
 import { useState } from "react";
-// import Image from "next/image"; // re-enable with the socials block below
+import Image from "next/image";
 import { Reveal } from "../ui/Reveal";
-import { submit, apply } from "@/lib/content";
-import { formatPhoneUS, isValidEmail, isValidPhoneUS } from "@/lib/format";
-// import { socials } from "@/lib/content"; // re-enable when socials exist
+import { submit } from "@/lib/content";
+
+/*
+  Landing-page contact section — "Be Considered" call-to-action.
+
+  Per Ronnie/Mel's 2026-07-07 design update, the old form (name + email +
+  practice + …) was replaced with a single centered CTA button. All
+  doctor info is captured at the /apply gate already, so this section
+  just needs to give the doctor a way to raise their hand — one click.
+
+  Clicking the button POSTs to /api/consider, which:
+    - looks up the doctor by their session cookie (they got here through /apply)
+    - fires the admin notification email
+    - returns 200
+
+  The old form JSX + copy is preserved via `content.ts` legacy fields so
+  it can be restored if the pattern is ever needed again.
+*/
 
 type Status = "idle" | "loading" | "success" | "error";
-
-const inputClass =
-  "w-full rounded-sm border border-transparent bg-[#fad4bc] px-4 py-3 text-sm text-wine-950 placeholder:uppercase placeholder:tracking-wider placeholder:text-[#9a7257] focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/40";
 
 export function SubmitForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
-  // Phone is controlled so we can auto-format as the user types.
-  const [phone, setPhone] = useState("");
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const fd = new FormData(form);
+  async function handleClick() {
+    if (status === "loading" || status === "success") return;
     setStatus("loading");
     setError("");
-
-    // Client-side format checks — fast fail before the network hop.
-    const emailValue = String(fd.get("email") || "");
-    if (!isValidEmail(emailValue)) {
-      setError(apply.errors.invalidEmail);
-      setStatus("error");
-      return;
-    }
-    if (!isValidPhoneUS(phone)) {
-      setError(apply.errors.invalidPhone);
-      setStatus("error");
-      return;
-    }
-
     try {
-      const res = await fetch("/api/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: fd.get("name"),
-          practiceName: fd.get("practiceName"),
-          email: fd.get("email"),
-          phone,
-          website: fd.get("website"),
-          licenseNo: fd.get("licenseNo"),
-          ehr: fd.get("ehr"),
-          referredBy: fd.get("referredBy"),
-          message: fd.get("message"),
-          company: fd.get("company"), // honeypot
-        }),
-      });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setError(json.error || "Something went wrong. Please try again.");
-        setStatus("error");
+      const res = await fetch("/api/consider", { method: "POST" });
+      const data = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        error?: string;
+      };
+      if (res.ok && data.ok) {
+        setStatus("success");
         return;
       }
-      setStatus("success");
-      form.reset();
+      setError(data.error || submit.errorGeneric);
+      setStatus("error");
     } catch {
-      setError("Network error. Please try again.");
+      setError(submit.errorNetwork);
       setStatus("error");
     }
   }
 
   return (
-    <section id="contact" className="px-6 py-10 sm:px-8 sm:py-12">
+    <section id="contact" className="px-6 py-14 sm:px-8 sm:py-20">
       <div className="mx-auto w-full max-w-5xl">
-        {/* top divider */}
-        <div className="mb-12 h-px w-full bg-gold/45 sm:mb-16" />
+        {/* Top divider with center emblem */}
+        <Reveal>
+          <div className="flex items-center justify-center gap-4 sm:gap-6">
+            <span className="h-px flex-1 bg-gold/45" />
+            <Image
+              src="/footer-emblem.png"
+              alt=""
+              aria-hidden="true"
+              width={1273}
+              height={1252}
+              className="h-10 w-auto shrink-0 sm:h-12"
+            />
+            <span className="h-px flex-1 bg-gold/45" />
+          </div>
+        </Reveal>
 
-        <div className="grid gap-12 md:grid-cols-2 md:gap-0">
-          {/* Left — heading, body, socials */}
-          <Reveal className="text-center md:pr-12 md:text-left lg:pr-16">
-            <h2 className="font-serif text-3xl leading-[1.12] tracking-tight text-gold sm:text-4xl md:text-[2.6rem]">
-              <span className="block">{submit.heading.line1}</span>
-              <span className="block">{submit.heading.line2}</span>
-            </h2>
-            <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-white/90 md:mx-0">
-              {submit.body}
-            </p>
+        <Reveal className="mt-14 text-center sm:mt-20">
+          <p className="text-xs uppercase tracking-[0.28em] text-gold sm:text-[13px]">
+            {submit.eyebrow}
+          </p>
 
-            {/* Socials hidden for now — no accounts yet. Re-enable this block
-                (and the Image / socials imports above) when they exist.
-            <p className="mt-12 text-sm font-semibold uppercase tracking-[0.2em] text-gold">
-              {submit.socialsLabel}
-            </p>
-            <div className="mt-5 flex items-center gap-6">
-              {socials.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  aria-label={s.label}
-                  className="transition-opacity hover:opacity-75"
-                >
-                  <Image
-                    src={s.icon}
-                    alt={s.label}
-                    width={100}
-                    height={100}
-                    className="h-9 w-9 object-contain"
-                  />
-                </a>
-              ))}
-            </div>
-            */}
-          </Reveal>
+          <h2 className="mt-8 font-serif text-4xl leading-[1.05] tracking-tight text-gold sm:text-6xl md:text-[5.25rem]">
+            <em className="italic">{submit.headingItalic}</em>{" "}
+            <span className="not-italic">{submit.heading}</span>
+          </h2>
 
-          {/* Right — form (vertical divider on md+) */}
-          <Reveal delay={120} className="md:border-l md:border-gold/45 md:pl-12 lg:pl-16">
-            <p className="mb-6 text-sm leading-relaxed text-white/90">
-              {submit.formIntro}
-            </p>
-            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-              {/* honeypot — hidden from users */}
-              <input
-                type="text"
-                name="company"
-                tabIndex={-1}
-                autoComplete="off"
-                aria-hidden="true"
-                className="absolute left-[-9999px] h-0 w-0 opacity-0"
-              />
-              {/* Row 1: Name (required) | Practice Name (optional).
-                  Row 2: Email (required) | Phone (required).
-                  Both stack on mobile, side-by-side on sm+ so each input stays
-                  wide enough to read while typing. */}
-              <div className="grid gap-4 sm:grid-cols-2">
-                <input
-                  type="text"
-                  name="name"
-                  required
-                  autoComplete="name"
-                  placeholder={submit.fields.name}
-                  className={inputClass}
-                />
-                <input
-                  type="text"
-                  name="practiceName"
-                  autoComplete="organization"
-                  placeholder={submit.fields.practiceName}
-                  className={inputClass}
-                />
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  placeholder={submit.fields.email}
-                  className={inputClass}
-                />
-                <input
-                  type="tel"
-                  name="phone"
-                  required
-                  inputMode="tel"
-                  autoComplete="tel"
-                  maxLength={20}
-                  value={phone}
-                  onChange={(e) => setPhone(formatPhoneUS(e.target.value))}
-                  placeholder={submit.fields.phone}
-                  className={inputClass}
-                />
-              </div>
-              <input
-                type="url"
-                name="website"
-                inputMode="url"
-                autoComplete="url"
-                placeholder={submit.fields.website}
-                className={inputClass}
-              />
-              <input
-                type="text"
-                name="licenseNo"
-                autoCapitalize="characters"
-                autoCorrect="off"
-                placeholder={submit.fields.licenseNo}
-                className={inputClass}
-              />
-              <select
-                name="ehr"
-                defaultValue=""
-                className={`${inputClass} appearance-none uppercase tracking-wider`}
-                aria-label={submit.fields.ehrPlaceholder}
-              >
-                <option value="" disabled>
-                  {submit.fields.ehrPlaceholder}
-                </option>
-                {apply.ehrOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="text"
-                name="referredBy"
-                placeholder={submit.fields.referredBy}
-                className={inputClass}
-              />
-              <textarea
-                name="message"
-                rows={5}
-                placeholder={submit.fields.message}
-                className={`${inputClass} resize-none`}
-              />
-              <button
-                type="submit"
-                disabled={status === "loading"}
-                className="gradient-gold w-full rounded-sm py-3 text-xs font-semibold uppercase tracking-[0.2em] text-wine-950 transition-opacity hover:opacity-90 disabled:opacity-60"
-              >
-                {status === "loading" ? "Submitting…" : submit.cta}
-              </button>
+          <span className="mx-auto mt-8 block h-px w-24 bg-gold/70 sm:mt-10 sm:w-32" />
 
-              {status === "success" && (
-                <p className="text-sm text-gold">
-                  Thank you — your practice has been submitted. The founders will
-                  be in touch.
-                </p>
-              )}
-              {status === "error" && (
-                <p className="text-sm text-red-300">{error}</p>
-              )}
-            </form>
-          </Reveal>
-        </div>
+          <p className="mx-auto mt-8 max-w-lg font-sans text-sm leading-relaxed text-gold sm:mt-10 sm:text-[15px]">
+            {submit.body}
+          </p>
+
+          {/*
+            The gold "Click Here to Be Considered" button — designer asset.
+            Hover: lifts up 4px + soft rose-copper glow beneath, so it feels
+            like the plaque is hovering off the wall. Active/click: settles
+            back down, mimicking a physical press.
+            motion-reduce respects the user's OS setting (no motion for a11y).
+          */}
+          <button
+            type="button"
+            onClick={handleClick}
+            disabled={status === "loading" || status === "success"}
+            aria-label={submit.cta}
+            className="group mx-auto mt-10 block w-full max-w-md
+              transition-[transform,filter,box-shadow] duration-300 ease-out
+              hover:-translate-y-1 hover:brightness-105
+              hover:drop-shadow-[0_16px_30px_rgba(198,153,134,0.28)]
+              active:translate-y-0 active:duration-100
+              motion-reduce:transition-none motion-reduce:hover:translate-y-0
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4 focus-visible:ring-offset-wine-900
+              disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0
+              sm:mt-12 sm:max-w-lg"
+          >
+            <Image
+              src="/contact-button.png"
+              alt={submit.ctaAlt}
+              width={1726}
+              height={412}
+              loading="eager"
+              className="block h-auto w-full"
+            />
+          </button>
+
+          {/* Live status text — same size and rhythm as the note below,
+              so the layout doesn't jump when we swap between them. */}
+          <p
+            className="mt-6 min-h-[1.25rem] text-xs uppercase tracking-[0.2em] text-gold sm:text-[13px]"
+            role="status"
+            aria-live="polite"
+          >
+            {status === "loading" && submit.ctaPending}
+            {status === "success" && submit.ctaSent}
+            {status === "error" && (
+              <span className="normal-case tracking-normal text-red-300">
+                {error}
+              </span>
+            )}
+          </p>
+
+          {/* Invitation-only note with small lock glyph */}
+          <div className="mt-6 flex items-center justify-center gap-2 font-sans text-xs uppercase tracking-[0.18em] text-gold sm:text-[12px]">
+            <LockGlyph />
+            {submit.note}
+          </div>
+        </Reveal>
+
+        {/* No bottom divider here — <Footer/> renders its own top divider,
+            so this section ends with padding and the Footer's line takes
+            over as the natural separator. */}
       </div>
     </section>
+  );
+}
+
+/** Small inline padlock — matches the design's minimal glyph next to the note. */
+function LockGlyph() {
+  return (
+    <svg
+      viewBox="0 0 12 14"
+      width="10"
+      height="12"
+      aria-hidden="true"
+      className="opacity-70"
+    >
+      <path
+        d="M2.5 6V4a3.5 3.5 0 0 1 7 0v2"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1"
+      />
+      <rect
+        x="1"
+        y="6"
+        width="10"
+        height="7.5"
+        rx="1"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1"
+      />
+    </svg>
   );
 }

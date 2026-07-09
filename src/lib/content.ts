@@ -330,9 +330,32 @@ export const apply = {
   },
 } as const;
 
+/*
+  As of 2026-07-07 (Ronnie's design update): the landing-page contact
+  section replaces the form with a single "Be Considered" call-to-action
+  button. All doctor info is already captured at the /apply gate.
+  Clicking the button fires an admin-notification email so Mel knows the
+  doctor is actively raising their hand.
+
+  The old form copy (`submit.fields`, `submit.formIntro`, etc.) is kept
+  below so it can be restored if the form pattern is ever needed again.
+*/
 export const submit = {
-  heading: { line1: "Submit Your Practice", line2: "for Qualification" },
-  body: "Because the founding circle is limited to ten independent physicians, entry is by invitation, through a conversation with the founders.",
+  eyebrow: "Ten Founding Physicians. By Invitation Only.",
+  headingItalic: "Be",
+  heading: "Considered",
+  body: "Click below to be considered and receive the opportunity to be invited to a personal meeting with us.",
+  cta: "Click Here to Be Considered",
+  ctaAlt: "Be Considered button — request a personal meeting",
+  ctaSent: "Request Sent",
+  ctaPending: "Sending…",
+  note: "This club is invitation only",
+  errorGeneric: "Something went wrong. Please try again.",
+  errorNetwork: "Network error. Please try again.",
+
+  // --- Original form copy (kept for possible restoration) ---
+  legacyHeading: { line1: "Submit Your Practice", line2: "for Qualification" },
+  legacyBody: "Because the founding circle is limited to ten independent physicians, entry is by invitation, through a conversation with the founders.",
   formIntro:
     "Completing the brief profile below lets the founders get to know your practice before a place is offered.",
   socialsLabel: "Socials",
@@ -347,7 +370,7 @@ export const submit = {
     referredBy: "Referred By (if applicable)",
     message: "Message",
   },
-  cta: "Submit",
+  legacyCta: "Submit",
 };
 
 export const footer = {

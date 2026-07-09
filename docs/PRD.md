@@ -256,9 +256,21 @@ Cross-referenced against the numbered SRS requirements for traceability.
 ## 10.5 Recent design decisions (Ronnie + Mel, 2026-07-07)
 
 - **Password gate paused.** `/locked` is no longer wired into the visitor
-  flow — `/apply` is the sole gateway. Files are preserved in the repo so
-  the flow can be restored later without a rebuild. See `src/proxy.ts`
-  block comment for the pause point.
+  flow — `/apply` is the sole gateway for physicians. Files are preserved
+  in the repo so the flow can be restored later without a rebuild. See
+  `src/proxy.ts` block comment for the pause point.
+
+- **Team access via ONE shared one-click link (2026-07-09).** The team +
+  internal stakeholders (Mel, Ronnie, Dr. John Yee, investors) don't need
+  to fill the /apply form. Instead, ONE invite code labeled `"Team"` is
+  minted via `node scripts/invite.mjs create "Team" 365`, and the
+  resulting `https://lilimd.ai/?c=<CODE>` link is shared with the
+  organization. The `?c=CODE` one-click handler in `src/proxy.ts`
+  validates the code and drops the visitor straight onto the main site —
+  no form, no password page. Trade-off (accepted by Nirali): no per-person
+  attribution, and if the link leaks the whole team's code has to be
+  rotated at once (mint a new one, revoke the old one via `/admin` or
+  `scripts/invite.mjs revoke <id>`).
 - **Landing-page CTA is changing** — currently a full "Submit Your Practice
   for Qualification" form. Ronnie is sending updated design where this
   becomes a simple **"Click to be considered"** button (since `/apply`

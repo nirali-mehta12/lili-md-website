@@ -36,7 +36,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const { pathname /* , searchParams */ } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
 
   // Pages that handle their own auth get through the visitor gate:
   //   - /apply    : info-form entry (mints its own session on submit)
@@ -62,18 +62,22 @@ export function proxy(request: NextRequest) {
     return noStore(NextResponse.next());
   }
 
-  /*
-    // --- Password gate paused ---
-    // One-click invite link (?c=CODE) -> validate via the access route,
-    // which sets the session cookie and redirects back to the page they wanted.
-    const code = searchParams.get("c");
-    if (code) {
-      const url = new URL("/api/access", request.url);
-      url.searchParams.set("c", code);
-      url.searchParams.set("next", pathname);
-      return NextResponse.redirect(url);
-    }
-  */
+  // One-click invite link (?c=CODE) -> validate via /api/access, which sets
+  // the session cookie and redirects to the requested page.
+  //
+  // Used for the SHARED TEAM LINK (2026-07-09): rather than restore the full
+  // password-page UI (still paused per Ronnie/Mel), we keep just this
+  // one-click handler. Mint a code labeled "Team" once via
+  //     node scripts/invite.mjs create "Team" 365
+  // and share the resulting `?c=CODE` link with the org — no form to fill,
+  // no password to remember. See PRD §10.5 for the design decision.
+  const code = searchParams.get("c");
+  if (code) {
+    const url = new URL("/api/access", request.url);
+    url.searchParams.set("c", code);
+    url.searchParams.set("next", pathname);
+    return NextResponse.redirect(url);
+  }
 
   // No session -> show the /apply info-form page (keep the URL they came to).
   return noStore(NextResponse.rewrite(new URL(APPLY_PAGE, request.url)));

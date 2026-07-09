@@ -83,9 +83,10 @@ export async function POST(request: NextRequest) {
   const inviteId = session.sub;
   log.info("consider.clicked", { cid, ip, inviteId });
 
-  // Look up the invite for a display label ("Dr. First Last · Practice").
-  const db = getDb();
-  let inviteLabel: string | null = null;
+  // Look up the doctor's application by inviteId — this is the linkage
+  // we established in /api/apply. Single-field WHERE query, so Firestore
+  // does NOT require a composite index (unlike the older name-based
+  // lookup which needed .where("fullName", "==", …).orderBy("createdAt")).
   type ApplicationRecord = {
     firstName?: string;
     lastName?: string;
@@ -97,24 +98,30 @@ export async function POST(request: NextRequest) {
     licenseNo?: string;
     ehr?: string;
     referredBy?: string;
+    createdAt?: string;
   };
+  const db = getDb();
   let doctorApp: ApplicationRecord | null = null;
   if (db) {
     try {
-      const inviteDoc = await db.collection("invites").doc(inviteId).get();
-      if (inviteDoc.exists) {
-        inviteLabel = (inviteDoc.data() as { label?: string }).label ?? null;
-      }
-      // Find the matching /apply submission (linked via the label).
-      if (inviteLabel) {
-        const apps = await db
-          .collection("doctor-applications")
-          .where("fullName", "==", inviteLabel.split(" · ")[0]?.trim() ?? "")
-          .orderBy("createdAt", "desc")
-          .limit(1)
-          .get();
-        if (!apps.empty) {
-          doctorApp = apps.docs[0].data() as ApplicationRecord;
+      const apps = await db
+        .collection("doctor-applications")
+        .where("inviteId", "==", inviteId)
+        .limit(1)
+        .get();
+      if (!apps.empty) {
+        doctorApp = apps.docs[0].data() as ApplicationRecord;
+      } else {
+        // Older applications (pre-inviteId-link) — fall back to the invite
+        // label so at least the doctor's name reaches Mel's inbox.
+        const inviteDoc = await db.collection("invites").doc(inviteId).get();
+        if (inviteDoc.exists) {
+          const label = (inviteDoc.data() as { label?: string }).label ?? "";
+          const parts = label.split(" · ");
+          doctorApp = {
+            fullName: parts[0]?.trim() || "",
+            practiceName: parts[1]?.trim() || "",
+          };
         }
       }
     } catch (err) {
@@ -126,9 +133,6 @@ export async function POST(request: NextRequest) {
   // the container before SMTP resolves.
   try {
     await sendBeConsideredNotification({
-      inviteId,
-      inviteLabel,
-      ip,
       cid,
       application: doctorApp,
     });

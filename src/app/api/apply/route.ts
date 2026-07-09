@@ -253,8 +253,29 @@ export async function POST(request: NextRequest) {
     practice: application.practiceName,
   });
 
-  // 5. Persist the application record ------------------------------------
+  // 5. Mint the invite FIRST so we can link the application record to it.
+  //    Ordering matters: /api/consider later looks up the application by
+  //    inviteId (single-field query, no composite index needed) — writing
+  //    the invite ID onto the application makes that lookup trivial.
+  //    createInvite can return null (getDb null) or throw (Firestore
+  //    reachable but the write failed) — both mean 503 to the user.
   const db = getDb();
+  let invite: Awaited<ReturnType<typeof createInvite>> = null;
+  try {
+    invite = await createInvite({ label, ttlDays: INVITE_TTL_DAYS });
+  } catch (err) {
+    log.error("apply.invite_creation_threw", { cid, err });
+  }
+  if (!invite) {
+    log.error("apply.invite_creation_failed", { cid });
+    return NextResponse.json(
+      { ok: false, error: apply.errors.unavailable },
+      { status: 503 },
+    );
+  }
+  log.info("apply.invite_minted", { cid, inviteId: invite.id });
+
+  // 6. Persist the application record, linked to the invite ID above.
   const now = new Date().toISOString();
   let applicationDocId: string | null = null;
   if (db) {
@@ -262,6 +283,7 @@ export async function POST(request: NextRequest) {
       const docRef = await db.collection("doctor-applications").add({
         ...application,
         fullName,
+        inviteId: invite.id, // link back to invites/{id} for later lookup.
         consent, // audit trail: proves the doctor ticked the box.
         consentAt: now,
         createdAt: now,
@@ -279,26 +301,6 @@ export async function POST(request: NextRequest) {
   } else {
     log.warn("apply.placeholder_mode_no_db", { cid, ip });
   }
-
-  // 6. Mint an invite so the same code path as /locked owns the session.
-  //    In manual mode we'd email this code to Mel instead of setting cookie.
-  //    createInvite can either return null (getDb null) or throw (Firestore
-  //    reachable but the write failed, e.g. expired ADC locally) — both are
-  //    the same user-visible failure, so unify them under a 503.
-  let invite: Awaited<ReturnType<typeof createInvite>> = null;
-  try {
-    invite = await createInvite({ label, ttlDays: INVITE_TTL_DAYS });
-  } catch (err) {
-    log.error("apply.invite_creation_threw", { cid, err });
-  }
-  if (!invite) {
-    log.error("apply.invite_creation_failed", { cid });
-    return NextResponse.json(
-      { ok: false, error: apply.errors.unavailable },
-      { status: 503 },
-    );
-  }
-  log.info("apply.invite_minted", { cid, inviteId: invite.id });
 
   // 7. Notify admin — AWAITED so serverless can't freeze the container
   //    before nodemailer's TLS handshake completes.

@@ -349,6 +349,8 @@ export const submit = {
   ctaAlt: "Be Considered button — request a personal meeting",
   ctaSent: "Request Sent",
   ctaPending: "Sending…",
+  successMessage:
+    "Request received. If your candidacy advances, we will be in touch to arrange an introduction.",
   note: "This club is invitation only",
   errorGeneric: "Something went wrong. Please try again.",
   errorNetwork: "Network error. Please try again.",

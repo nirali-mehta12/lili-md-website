@@ -86,46 +86,71 @@ export function SubmitForm() {
           </p>
 
           {/*
-            The gold "Click Here to Be Considered" button — designer asset.
-            Hover: lifts up 4px + soft rose-copper glow beneath, so it feels
-            like the plaque is hovering off the wall. Active/click: settles
-            back down, mimicking a physical press.
-            motion-reduce respects the user's OS setting (no motion for a11y).
-          */}
-          <button
-            type="button"
-            onClick={handleClick}
-            disabled={status === "loading" || status === "success"}
-            aria-label={submit.cta}
-            className="group mx-auto mt-10 block w-full max-w-md
-              transition-[transform,filter,box-shadow] duration-300 ease-out
-              hover:-translate-y-1 hover:brightness-105
-              hover:drop-shadow-[0_16px_30px_rgba(198,153,134,0.28)]
-              active:translate-y-0 active:duration-100
-              motion-reduce:transition-none motion-reduce:hover:translate-y-0
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4 focus-visible:ring-offset-wine-900
-              disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0
-              sm:mt-12 sm:max-w-lg"
-          >
-            <Image
-              src="/contact-button.png"
-              alt={submit.ctaAlt}
-              width={1726}
-              height={412}
-              loading="eager"
-              className="block h-auto w-full"
-            />
-          </button>
+            Button + success message share the same rectangle. Both are
+            mounted; opacity cross-fades between them on success — button
+            fades OUT, message fades IN — so the layout doesn't jump and
+            the message lands where the button was.
 
-          {/* Live status text — same size and rhythm as the note below,
-              so the layout doesn't jump when we swap between them. */}
+            Button hover: lifts up 4px + soft rose-copper glow beneath, so
+            it feels like the plaque is hovering off the wall. Active/click:
+            settles back down, mimicking a physical press. motion-reduce
+            respects the user's OS setting (no motion for a11y).
+          */}
+          <div className="relative mx-auto mt-10 w-full max-w-md sm:mt-12 sm:max-w-lg">
+            <button
+              type="button"
+              onClick={handleClick}
+              disabled={status === "loading" || status === "success"}
+              aria-label={submit.cta}
+              aria-hidden={status === "success"}
+              className={`group block w-full cursor-pointer
+                transition-[transform,filter,box-shadow,opacity] duration-500 ease-out
+                hover:-translate-y-1 hover:brightness-105
+                hover:drop-shadow-[0_16px_30px_rgba(198,153,134,0.28)]
+                active:translate-y-0 active:duration-100
+                motion-reduce:transition-none motion-reduce:hover:translate-y-0
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4 focus-visible:ring-offset-wine-900
+                disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:drop-shadow-none
+                ${
+                  status === "success"
+                    ? "pointer-events-none opacity-0"
+                    : "opacity-100"
+                }`}
+            >
+              <Image
+                src="/contact-button.png"
+                alt={submit.ctaAlt}
+                width={1726}
+                height={412}
+                loading="eager"
+                className="block h-auto w-full"
+              />
+            </button>
+
+            {/* Success confirmation — overlaps the button's rectangle and
+                fades in on click. delay-200 lets the button visibly fade
+                out first before the message reveals, so it reads as one
+                smooth handoff. */}
+            <div
+              role="status"
+              aria-live="polite"
+              className={`pointer-events-none absolute inset-0 flex items-center justify-center px-2 text-center transition-opacity duration-500 delay-200 motion-reduce:transition-none motion-reduce:delay-0 ${
+                status === "success" ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <p className="font-sans text-sm leading-relaxed text-gold sm:text-[15px]">
+                {submit.successMessage}
+              </p>
+            </div>
+          </div>
+
+          {/* Loading / error text below — cleared once success handoff completes. */}
           <p
             className="mt-6 min-h-[1.25rem] text-xs uppercase tracking-[0.2em] text-gold sm:text-[13px]"
             role="status"
             aria-live="polite"
           >
             {status === "loading" && submit.ctaPending}
-            {status === "success" && submit.ctaSent}
             {status === "error" && (
               <span className="normal-case tracking-normal text-red-300">
                 {error}

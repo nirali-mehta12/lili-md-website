@@ -42,9 +42,11 @@ export async function POST(request: NextRequest) {
   }
 
   const res = NextResponse.json({ ok: true });
+  // Match visitor-session policy: Secure only in production so /admin
+  // login works on http://localhost during local testing.
   res.cookies.set(ADMIN_COOKIE, signAdmin(ADMIN_TTL_SECONDS), {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: ADMIN_TTL_SECONDS,

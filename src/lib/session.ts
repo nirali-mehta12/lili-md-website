@@ -16,6 +16,24 @@ import crypto from "node:crypto";
 
 export const SESSION_COOKIE = "lili_access";
 
+/**
+ * Cookie flags for the access session.
+ *
+ * `secure` is only forced in production. In `next dev` (http://localhost)
+ * browsers refuse Secure cookies, so a successful `?c=` unlock would never
+ * stick and `/api/consider` would keep returning 401. Prod (HTTPS) still
+ * gets Secure=true.
+ */
+export function sessionCookieOptions(ttlSeconds: number) {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge: ttlSeconds,
+  };
+}
+
 function getSecret(): string {
   const s = process.env.ACCESS_SESSION_SECRET;
   if (!s) throw new Error("ACCESS_SESSION_SECRET is not set");

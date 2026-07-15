@@ -81,7 +81,17 @@ export function SubmitForm() {
 
           <span className="mx-auto mt-8 block h-px w-24 bg-gold/70 sm:mt-10 sm:w-32" />
 
-          <p className="mx-auto mt-8 max-w-lg font-sans text-sm leading-relaxed text-gold sm:mt-10 sm:text-[15px]">
+          {/* Instruction copy fades + collapses with the button on success —
+              once the CTA is gone, "click below…" would read as stale, and
+              leaving a blank gap above the confirmation looks broken. */}
+          <p
+            aria-hidden={status === "success"}
+            className={`mx-auto max-w-lg overflow-hidden font-sans text-sm leading-relaxed text-gold transition-[opacity,margin,max-height] duration-500 ease-out motion-reduce:transition-none sm:text-[15px] ${
+              status === "success"
+                ? "pointer-events-none mt-0 max-h-0 opacity-0"
+                : "mt-8 max-h-40 opacity-100 sm:mt-10"
+            }`}
+          >
             {submit.body}
           </p>
 

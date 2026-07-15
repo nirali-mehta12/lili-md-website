@@ -5,26 +5,20 @@ import { verifySession, SESSION_COOKIE } from "@/lib/session";
   ============================================================
   Access gate (Next.js 16 "proxy" — formerly middleware)
   ------------------------------------------------------------
-  DISABLED by default. The site is fully PUBLIC unless
-  ACCESS_GATE_ENABLED === "true". To turn the gate on:
-    1. Set ACCESS_SESSION_SECRET (32+ random bytes) in the env.
-    2. Set ACCESS_GATE_ENABLED="true" and redeploy.
+  Gate enforcement is OFF unless ACCESS_GATE_ENABLED === "true".
+  One-click invite links (?c=CODE) ALWAYS run — they mint a session
+  cookie via /api/access. That matters because:
+    - Landing "Be Considered" requires a session even when the site
+      is otherwise public locally
+    - Shared team links (PRD §10.5) must work the same in every env
 
-  When enabled:
+  When the gate IS enabled:
     - valid session cookie       -> pass through to the real site
-    - otherwise                  -> show the /apply info-form page
-                                    (URL unchanged; visitor fills form
-                                    and is granted access on submit)
+    - otherwise                  -> rewrite to /apply
 
   --- PASSWORD GATE PAUSED (2026-07-07) ---
-  Per Ronnie/Mel: /apply is now the SOLE gateway. The old /locked
-  password page + one-click invite (?c=CODE) flow are commented out
-  below but preserved so we can restore if needed. Files kept in
-  place: src/app/locked/*, src/app/api/access/*, src/lib/invites.ts,
-  scripts/invite.mjs — none of these are wired into the visitor flow
-  anymore, but they still work if called directly (e.g. /admin).
-  To restore: uncomment the LOCK_PAGE exemption + ?c= handling +
-  change the rewrite target back to LOCK_PAGE.
+  /locked UI is preserved but not wired. Restore by uncommenting
+  LOCK_PAGE exemption + changing the rewrite target back to LOCK_PAGE.
   ============================================================
 */
 
@@ -32,16 +26,27 @@ import { verifySession, SESSION_COOKIE } from "@/lib/session";
 const APPLY_PAGE = "/apply";
 
 export function proxy(request: NextRequest) {
+  const { pathname, searchParams } = request.nextUrl;
+
+  // One-click invite (?c=CODE) — always, even when the gate is off.
+  // Without this, local `/?c=…` is a no-op (site is public) and
+  // /api/consider stays 401 forever. Prod behavior unchanged: gate
+  // still requires a session for everything else.
+  const code = searchParams.get("c");
+  if (code) {
+    const url = new URL("/api/access", request.url);
+    url.searchParams.set("c", code);
+    url.searchParams.set("next", pathname);
+    return NextResponse.redirect(url);
+  }
+
   if (process.env.ACCESS_GATE_ENABLED !== "true") {
     return NextResponse.next();
   }
 
-  const { pathname, searchParams } = request.nextUrl;
-
   // Pages that handle their own auth get through the visitor gate:
   //   - /apply    : info-form entry (mints its own session on submit)
   //   - /admin    : password-protected internal tool
-  // (`/locked` was exempted here before the password gate was paused.)
   if (
     // pathname === LOCK_PAGE ||  // paused
     pathname === APPLY_PAGE ||
@@ -57,26 +62,8 @@ export function proxy(request: NextRequest) {
     return res;
   };
 
-  // Already authenticated for this device?
   if (verifySession(request.cookies.get(SESSION_COOKIE)?.value)) {
     return noStore(NextResponse.next());
-  }
-
-  // One-click invite link (?c=CODE) -> validate via /api/access, which sets
-  // the session cookie and redirects to the requested page.
-  //
-  // Used for the SHARED TEAM LINK (2026-07-09): rather than restore the full
-  // password-page UI (still paused per Ronnie/Mel), we keep just this
-  // one-click handler. Mint a code labeled "Team" once via
-  //     node scripts/invite.mjs create "Team" 365
-  // and share the resulting `?c=CODE` link with the org — no form to fill,
-  // no password to remember. See PRD §10.5 for the design decision.
-  const code = searchParams.get("c");
-  if (code) {
-    const url = new URL("/api/access", request.url);
-    url.searchParams.set("c", code);
-    url.searchParams.set("next", pathname);
-    return NextResponse.redirect(url);
   }
 
   // No session -> show the /apply info-form page (keep the URL they came to).

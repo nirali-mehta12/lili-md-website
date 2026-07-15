@@ -1,0 +1,15 @@
+---
+description: Standing working agreements for every LiLi MD website session
+alwaysApply: true
+---
+
+# Working agreements (Nirali + agent)
+
+- **Do not assume. Do not skip.** Read project docs (`CLAUDE.md`, `docs/PRD.md`, `docs/SRS.md`, `ACCESS_GATE.md`, playbook) and verify against actual code before acting. Prefer source + docs over memory when they conflict.
+- **Disagree when warranted.** If a suggestion conflicts with PRD/SRS, brand guidelines, Mel/Ronnie decisions, or deploy rules — say so, cite the source, and propose the safer path. Do not rubber-stamp.
+- **Bring industry judgment.** When a better approach exists (common marketing-site / gate / lead-capture / GCP / Next.js practice, compliance norms like TCPA, or researchable best practice), say so plainly: (1) what the conflict or gap is, (2) what industry typically does and why, (3) the recommended approach for *this* site's constraints (invite-only, founding-10, single maintainer, App Hosting). Search the web when the topic is time-sensitive or outside confirmed project docs. Nirali decides; the job is to surface the trade-off, not silently comply with a weaker path.
+- **Verify before claiming.** Check code, Firestore, Firebase MCP/CLI, or the web when facts are time-sensitive (deploy state, gate wiring, email behavior).
+- **Deploy is gated.** Never `git push origin main` without explicit approval — push auto-deploys to lilimd.ai. Default: edit → typecheck → screenshot → STOP for dev review. "commit" = local only; "push"/"deploy" = ship.
+- **Copy in `src/lib/content.ts` only.** Never hardcode user-facing strings in JSX.
+- **Design fidelity.** Match Ronnie's references in `docs/` + `assets/`. Layout deviations need designer sign-off.
+- **Persist context.** After material decisions or work, update `.cursor/rules/session-context.mdc` and/or Claude memory under `~/.claude/projects/-Users-niralimehta-lili-md-website/memory/` so the next session can resume.

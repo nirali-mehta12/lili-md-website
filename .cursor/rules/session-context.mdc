@@ -1,0 +1,67 @@
+---
+description: Current project state + resume context for lilimd.ai (update when work lands)
+alwaysApply: true
+---
+
+# LiLi M.D. website — session context (as of 2026-07-15)
+
+## What this is
+Standalone invitation-only marketing site for **The Private Club at LiLi M.D.** (founding-10 physicians + investors). **Not** the main LiLi product app.
+- **Live:** https://lilimd.ai (Firebase App Hosting, project `lili-md-website`, us-east4)
+- **Repo:** https://github.com/nirali-mehta12/lili-md-website · local `~/lili-md-website`
+- **Owner:** Nirali · stakeholders Mel (CEO), Dr. John Yee (CMO), Ronnie (designer)
+
+## Authoritative docs (read these; CLAUDE.md status block is STALE as of 2026-06-17)
+| Doc | Role |
+|-----|------|
+| `docs/PRD.md` | Product intent, milestones, recent Mel/Ronnie decisions |
+| `docs/SRS.md` | Engineering requirements (FR/NFR), data model, runbook |
+| `docs/WEBSITE-PLAYBOOK.md` | Recipe for future marketing sites |
+| `docs/LiLi_MD_Brand_Guidelines.html` (+ `.pdf`) | Canonical brand (ask if page HTML diverges) |
+| `docs/lili-md-access-gate-page2.html` | `/apply` designer reference |
+| `ACCESS_GATE.md` | Gate overview — partially stale (says OFF/UI remaining) |
+| `CLAUDE.md` | Stack + file map useful; **"Next steps" outdated** |
+
+## Stack
+Next.js 16 App Router · React 19 · TypeScript · Tailwind v4 (`@theme` in `globals.css`) · Firebase Admin (Firestore, keyless ADC) · nodemailer → Gmail SMTP · App Hosting auto-deploy on `main`.
+
+## How access works TODAY
+1. **Gate ON in prod** (`ACCESS_GATE_ENABLED=true` in `apphosting.yaml`). Unauthenticated visitors are **rewritten to `/apply`**.
+2. **`/apply`** = sole info-form gateway (Instant mode: submit → session cookie → site). TCPA consent required. Persists `doctor-applications` + mints invite + emails admin (full detail).
+3. **Password `/locked` flow PAUSED** (2026-07-07) but code kept. Restore via commented block in `src/proxy.ts`.
+4. **Team one-click `?c=CODE` ENABLED** (2026-07-09): shared "Team" invite link skips the form. Trade-off: no per-person attribution; rotate whole code if leaked.
+5. **Landing CTA** = **"Be Considered" button** → `POST /api/consider` (not the old multi-field form). Looks up doctor from session → emails Mel. Legacy form copy kept in `content.ts`.
+6. **`/admin`** = Mel invite mint/list/revoke (`ADMIN_SECRET`). CLI: `node scripts/invite.mjs`.
+
+## Key paths
+- Landing composition: `src/app/page.tsx` (13 sections; `force-dynamic`)
+- Gate: `src/proxy.ts` · session: `src/lib/session.ts` · invites: `src/lib/invites.ts`
+- APIs: `/api/apply`, `/api/consider`, `/api/submit` (legacy form still exists), `/api/access`, `/api/admin/*`, `/api/health`
+- Copy: `src/lib/content.ts` · email: `src/lib/email.ts` · log: `src/lib/log.ts` (also dual-writes WARN+ to Firestore `app-events`)
+- Designer sources: `assets/` (gitignored) · runtime images: `public/` (real assets; placeholders swapped)
+- Canva PDF: `assets/Lili MD Home Page 18625-V5.pdf`
+
+## Firestore collections
+`invites` · `doctor-applications` · `leads` · `app-events` — all client access denied (`firestore.rules`).
+
+## Secrets (Secret Manager → App Hosting)
+`ACCESS_SESSION_SECRET` · `ADMIN_SECRET` · `SMTP_PASS` (from nirali@ → admin@lilisolutions.ai)
+
+## Open / pending (from PRD + memory — verify before acting)
+- Founding-10 applications still in progress (M7)
+- `www.lilimd.ai` not wired (optional)
+- Automated tests deferred
+- Marcelo punch list (2026-06-19): radial→linear/flat gradients, icon fix, Heatracing.com removal, HIPAA image quality — **re-verify what still applies vs already shipped**
+- CLAUDE.md / README / ACCESS_GATE.md drift — should be refreshed when touching docs
+- Firebase MCP may default to another project (`lili-internal-projects`); website project id is **`lili-md-website`**
+
+## This Cursor session (2026-07-15)
+- User asked for full project onboarding + standing rules + persistent memory.
+- Standing stance expanded: disagree on PRD/SRS/brand/Mel–Ronnie conflicts **and** propose industry-best alternatives (research when needed) with clear trade-offs.
+- **In progress / local (uncommitted):** Be Considered body fades+collapses on success; nav Contact→Apply; session cookies Secure only in prod; **proxy `?c=` now runs even when ACCESS_GATE_ENABLED is off** (was the real local 401 root cause); smoke-test prints localhost URL; restarted dev after ADC reauth.
+- Diagnosed 2026-07-15: local `/?c=` returned 200 with no cookie because gate-off early-return skipped one-click handler; stale Next process also held expired ADC. E2E curl now: redirect → cookie → `/api/consider` 200.
+- Next: hold for Nirali browser retest — do not push/commit unless asked.
+- Next: wait for review / further tasks; do not push/commit unless asked.
+
+## Claude memory (longer-form)
+`~/.claude/projects/-Users-niralimehta-lili-md-website/memory/MEMORY.md` and siblings.

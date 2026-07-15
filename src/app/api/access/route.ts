@@ -1,6 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { verifyCode } from "@/lib/invites";
-import { signSession, SESSION_COOKIE } from "@/lib/session";
+import {
+  signSession,
+  SESSION_COOKIE,
+  sessionCookieOptions,
+} from "@/lib/session";
 
 /*
   Access-gate endpoint.
@@ -32,13 +36,11 @@ function clientIp(req: NextRequest): string {
 }
 
 function setSession(res: NextResponse, sub: string, ttlSeconds: number): void {
-  res.cookies.set(SESSION_COOKIE, signSession(sub, ttlSeconds), {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: ttlSeconds,
-  });
+  res.cookies.set(
+    SESSION_COOKIE,
+    signSession(sub, ttlSeconds),
+    sessionCookieOptions(ttlSeconds),
+  );
 }
 
 export async function POST(request: NextRequest) {

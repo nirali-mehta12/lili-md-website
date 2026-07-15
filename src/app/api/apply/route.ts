@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getDb } from "@/lib/firebase";
 import { createInvite } from "@/lib/invites";
-import { signSession, SESSION_COOKIE, verifySession } from "@/lib/session";
+import { signSession, SESSION_COOKIE, verifySession, sessionCookieOptions } from "@/lib/session";
 import { sendDoctorApplicationNotification } from "@/lib/email";
 import { log, correlationId } from "@/lib/log";
 import { apply } from "@/lib/content";
@@ -119,13 +119,11 @@ function setSession(
   sub: string,
   ttlSeconds: number,
 ): void {
-  res.cookies.set(SESSION_COOKIE, signSession(sub, ttlSeconds), {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: ttlSeconds,
-  });
+  res.cookies.set(
+    SESSION_COOKIE,
+    signSession(sub, ttlSeconds),
+    sessionCookieOptions(ttlSeconds),
+  );
 }
 
 // --- Route ---------------------------------------------------------------

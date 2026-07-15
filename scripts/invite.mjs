@@ -59,6 +59,7 @@ if (cmd === "create") {
   console.log(`\n  Invite for: ${label}`);
   console.log(`  Code:       ${code}`);
   console.log(`  One-click:  ${SITE}/?c=${normalize(code)}`);
+  console.log(`  Local:      http://localhost:3000/?c=${normalize(code)}`);
   console.log(`  ID:         ${id}`);
   if (expiresAt) console.log(`  Expires:    ${expiresAt}`);
   console.log("");

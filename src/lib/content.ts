@@ -16,7 +16,8 @@ export const brand = {
 export const nav = [
   { label: "Home", href: "#home" },
   // { label: "About", href: "#about" },  // hidden from header + footer; uncomment to restore
-  { label: "Contact", href: "#contact" },
+  // Label "Apply" scrolls to the Be Considered CTA (#contact). Not the /apply gate page.
+  { label: "Apply", href: "#contact" },
 ];
 
 export const socials = [

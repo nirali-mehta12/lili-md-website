@@ -5,6 +5,7 @@ import {
   SESSION_COOKIE,
   sessionCookieOptions,
 } from "@/lib/session";
+import { publicOrigin } from "@/lib/request";
 
 /*
   Access-gate endpoint.
@@ -14,6 +15,10 @@ import {
 
   On success it sets a signed, HttpOnly session cookie so the visitor
   stays in (per device) until it expires. Rate-limited per IP.
+
+  Team one-click links (shared invite codes) use GET. Doctors still enter
+  via /apply — this endpoint does not remove or bypass that form for the
+  general audience; only a valid invite code sets a session.
 */
 
 export const dynamic = "force-dynamic";
@@ -41,6 +46,10 @@ function setSession(res: NextResponse, sub: string, ttlSeconds: number): void {
     signSession(sub, ttlSeconds),
     sessionCookieOptions(ttlSeconds),
   );
+}
+
+function redirectTo(request: NextRequest, path: string): NextResponse {
+  return NextResponse.redirect(new URL(path, publicOrigin(request)));
 }
 
 export async function POST(request: NextRequest) {
@@ -89,15 +98,15 @@ export async function GET(request: NextRequest) {
     nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/";
 
   if (isRateLimited(ip) || !code) {
-    return NextResponse.redirect(new URL("/locked", request.url));
+    return redirectTo(request, "/locked");
   }
 
   const result = await verifyCode(code, ip);
   if (!result.ok) {
-    return NextResponse.redirect(new URL("/locked?e=1", request.url));
+    return redirectTo(request, "/locked?e=1");
   }
 
-  const res = NextResponse.redirect(new URL(dest, request.url));
+  const res = redirectTo(request, dest);
   setSession(res, result.id, result.ttlSeconds);
   return res;
 }

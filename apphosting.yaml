@@ -22,6 +22,12 @@ env:
     value: admin@lilisolutions.ai
     availability:
       - RUNTIME
+  # Public origin for absolute redirects (team ?c= one-click links).
+  # App Hosting's request.url is 0.0.0.0:8080 — never use that for Location.
+  - variable: SITE_ORIGIN
+    value: https://lilimd.ai
+    availability:
+      - RUNTIME
   - variable: SMTP_HOST
     value: smtp.gmail.com
     availability:

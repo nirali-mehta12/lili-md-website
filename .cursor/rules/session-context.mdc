@@ -58,9 +58,8 @@ Next.js 16 App Router · React 19 · TypeScript · Tailwind v4 (`@theme` in `glo
 ## This Cursor session (2026-07-15)
 - User asked for full project onboarding + standing rules + persistent memory.
 - Standing stance expanded: disagree on PRD/SRS/brand/Mel–Ronnie conflicts **and** propose industry-best alternatives (research when needed) with clear trade-offs.
-- **In progress / local (uncommitted):** Be Considered body fades+collapses on success; nav Contact→Apply; session cookies Secure only in prod; **proxy `?c=` now runs even when ACCESS_GATE_ENABLED is off** (was the real local 401 root cause); smoke-test prints localhost URL; restarted dev after ADC reauth.
-- Diagnosed 2026-07-15: local `/?c=` returned 200 with no cookie because gate-off early-return skipped one-click handler; stale Next process also held expired ADC. E2E curl now: redirect → cookie → `/api/consider` 200.
-- Next: hold for Nirali browser retest — do not push/commit unless asked.
+- **Shipped 2026-07-15** (`b905acd`): Be Considered fade; nav Apply; ?c= when gate off; Secure cookies prod-only.
+- **Shipped 2026-07-15** (team link fix): `/api/access` redirects used `request.url` → `https://0.0.0.0:8080/` on App Hosting. Fixed via `publicOrigin()` + `SITE_ORIGIN=https://lilimd.ai`. `/apply` form + public gate unchanged — `?c=` remains team/invite one-click only.
 - Next: wait for review / further tasks; do not push/commit unless asked.
 
 ## Claude memory (longer-form)

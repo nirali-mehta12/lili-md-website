@@ -42,45 +42,64 @@ if (cmd === "create") {
     console.error('Usage: node scripts/invite.mjs create "Name" [ttlDays]');
     process.exit(1);
   }
-  const code = generateCode();
-  const id = crypto.randomUUID();
-  const expiresAt = ttlDays
-    ? new Date(Date.now() + ttlDays * 86_400_000).toISOString()
-    : null;
-  await db.collection(COLLECTION).doc(id).set({
-    label,
-    codeHash: hash(code),
-    createdAt: new Date().toISOString(),
-    expiresAt,
-    revoked: false,
-    accessCount: 0,
-    lastAccessAt: null,
-  });
-  console.log(`\n  Invite for: ${label}`);
-  console.log(`  Code:       ${code}`);
-  console.log(`  One-click:  ${SITE}/?c=${normalize(code)}`);
-  console.log(`  Local:      http://localhost:3000/?c=${normalize(code)}`);
-  console.log(`  ID:         ${id}`);
-  if (expiresAt) console.log(`  Expires:    ${expiresAt}`);
-  console.log("");
+  try {
+    const code = generateCode();
+    const id = crypto.randomUUID();
+    const expiresAt = ttlDays
+      ? new Date(Date.now() + ttlDays * 86_400_000).toISOString()
+      : null;
+    await db.collection(COLLECTION).doc(id).set({
+      label,
+      codeHash: hash(code),
+      createdAt: new Date().toISOString(),
+      expiresAt,
+      revoked: false,
+      accessCount: 0,
+      lastAccessAt: null,
+    });
+    console.log(`\n  Invite for: ${label}`);
+    console.log(`  Code:       ${code}`);
+    console.log(`  One-click:  ${SITE}/?c=${normalize(code)}`);
+    console.log(`  Local:      http://localhost:3000/?c=${normalize(code)}`);
+    console.log(`  ID:         ${id}`);
+    if (expiresAt) console.log(`  Expires:    ${expiresAt}`);
+    console.log("");
+  } catch (err) {
+    console.error("Failed to create invite:", err);
+    process.exit(1);
+  }
 } else if (cmd === "list") {
-  const snap = await db.collection(COLLECTION).orderBy("createdAt", "desc").get();
-  if (snap.empty) console.log("(no invites yet)");
-  snap.forEach((d) => {
-    const v = d.data();
-    const mark = v.revoked ? "REVOKED" : "active ";
-    console.log(
-      `  [${mark}] ${v.label}  · accesses: ${v.accessCount || 0}  · id: ${d.id}`,
-    );
-  });
+  try {
+    const snap = await db
+      .collection(COLLECTION)
+      .orderBy("createdAt", "desc")
+      .limit(100)
+      .get();
+    if (snap.empty) console.log("(no invites yet)");
+    snap.forEach((d) => {
+      const v = d.data();
+      const mark = v.revoked ? "REVOKED" : "active ";
+      console.log(
+        `  [${mark}] ${v.label}  · accesses: ${v.accessCount || 0}  · id: ${d.id}`,
+      );
+    });
+  } catch (err) {
+    console.error("Failed to list invites:", err);
+    process.exit(1);
+  }
 } else if (cmd === "revoke") {
   const id = args[0];
   if (!id) {
     console.error("Usage: node scripts/invite.mjs revoke <id>");
     process.exit(1);
   }
-  await db.collection(COLLECTION).doc(id).update({ revoked: true });
-  console.log(`  Revoked ${id}`);
+  try {
+    await db.collection(COLLECTION).doc(id).update({ revoked: true });
+    console.log(`  Revoked ${id}`);
+  } catch (err) {
+    console.error("Failed to revoke invite:", err);
+    process.exit(1);
+  }
 } else {
   console.log('Commands:\n  create "Name" [ttlDays]\n  list\n  revoke <id>');
 }

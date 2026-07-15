@@ -1,5 +1,7 @@
 import crypto from "node:crypto";
+import { FieldValue } from "firebase-admin/firestore";
 import { getDb } from "@/lib/firebase";
+import { log } from "@/lib/log";
 
 /*
   ============================================================
@@ -16,6 +18,8 @@ import { getDb } from "@/lib/firebase";
 */
 
 const COLLECTION = "invites";
+/** Cap admin/CLI list reads — unbounded queries spike cost (PER001). */
+const LIST_LIMIT = 100;
 // Unambiguous alphabet — no 0/O, 1/I/L.
 const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 
@@ -44,7 +48,12 @@ type InviteDoc = {
   lastAccessAt?: string | null;
 };
 
-/** Create an invite. Returns the plaintext code ONCE — store/send it now (not recoverable). */
+/**
+ * Create an invite. Returns the plaintext code ONCE — store/send it now
+ * (not recoverable).
+ *
+ * @returns `{ id, code }` on success, or `null` if Firestore is unavailable.
+ */
 export async function createInvite(opts: {
   label: string;
   ttlDays?: number | null;
@@ -57,69 +66,103 @@ export async function createInvite(opts: {
     opts.ttlDays && opts.ttlDays > 0
       ? new Date(Date.now() + opts.ttlDays * 86_400_000).toISOString()
       : null;
-  await db
-    .collection(COLLECTION)
-    .doc(id)
-    .set({
-      label: opts.label,
-      codeHash: hashCode(code),
-      createdAt: new Date().toISOString(),
-      expiresAt,
-      revoked: false,
-      accessCount: 0,
-      lastAccessAt: null,
-    } satisfies InviteDoc);
-  return { id, code };
+  try {
+    await db
+      .collection(COLLECTION)
+      .doc(id)
+      .set({
+        label: opts.label,
+        codeHash: hashCode(code),
+        createdAt: new Date().toISOString(),
+        expiresAt,
+        revoked: false,
+        accessCount: 0,
+        lastAccessAt: null,
+      } satisfies InviteDoc);
+    return { id, code };
+  } catch (err) {
+    log.error("invite.create_failed", { err, label: opts.label });
+    return null;
+  }
 }
 
 export type VerifyResult =
   | { ok: true; id: string; label: string; ttlSeconds: number }
-  | { ok: false; reason: "invalid" | "expired" | "revoked" };
+  | {
+      ok: false;
+      reason: "invalid" | "expired" | "revoked" | "unavailable";
+    };
 
 const DEFAULT_SESSION_DAYS = 7;
 
-/** Validate a code and, if valid, record the access (count + timestamp). */
-export async function verifyCode(code: string, ip: string): Promise<VerifyResult> {
+/**
+ * Validate a code and, if valid, record the access (count + timestamp).
+ *
+ * @param code  Plaintext invite code from the visitor.
+ * @param ip    Best-effort client IP for audit.
+ */
+export async function verifyCode(
+  code: string,
+  ip: string,
+): Promise<VerifyResult> {
   const db = getDb();
   if (!db) return { ok: false, reason: "invalid" };
 
-  const snap = await db
-    .collection(COLLECTION)
-    .where("codeHash", "==", hashCode(code))
-    .limit(1)
-    .get();
-  if (snap.empty) return { ok: false, reason: "invalid" };
+  try {
+    const snap = await db
+      .collection(COLLECTION)
+      .where("codeHash", "==", hashCode(code))
+      .limit(1)
+      .get();
+    if (snap.empty) return { ok: false, reason: "invalid" };
 
-  const doc = snap.docs[0];
-  const data = doc.data() as InviteDoc;
-  if (data.revoked) return { ok: false, reason: "revoked" };
+    const doc = snap.docs[0];
+    const data = doc.data() as InviteDoc;
+    if (data.revoked) return { ok: false, reason: "revoked" };
 
-  let ttlSeconds = DEFAULT_SESSION_DAYS * 86_400;
-  if (data.expiresAt) {
-    const remaining = Math.floor(
-      (new Date(data.expiresAt).getTime() - Date.now()) / 1000,
-    );
-    if (remaining <= 0) return { ok: false, reason: "expired" };
-    ttlSeconds = Math.min(ttlSeconds, remaining);
+    let ttlSeconds = DEFAULT_SESSION_DAYS * 86_400;
+    if (data.expiresAt) {
+      const remaining = Math.floor(
+        (new Date(data.expiresAt).getTime() - Date.now()) / 1000,
+      );
+      if (remaining <= 0) return { ok: false, reason: "expired" };
+      ttlSeconds = Math.min(ttlSeconds, remaining);
+    }
+
+    // Record the access — best-effort, never block entry on a logging failure.
+    // FieldValue.increment avoids lost updates under concurrent unlocks (BP002).
+    await doc.ref
+      .update({
+        accessCount: FieldValue.increment(1),
+        lastAccessAt: new Date().toISOString(),
+        lastAccessIp: ip,
+      })
+      .catch((err) => {
+        log.warn("invite.access_count_update_failed", { err, inviteId: doc.id });
+      });
+
+    return { ok: true, id: doc.id, label: data.label, ttlSeconds };
+  } catch (err) {
+    log.error("invite.verify_failed", { err });
+    return { ok: false, reason: "unavailable" };
   }
-
-  // Record the access — best-effort, never block entry on a logging failure.
-  await doc.ref
-    .update({
-      accessCount: (data.accessCount || 0) + 1,
-      lastAccessAt: new Date().toISOString(),
-      lastAccessIp: ip,
-    })
-    .catch(() => {});
-
-  return { ok: true, id: doc.id, label: data.label, ttlSeconds };
 }
 
+/**
+ * Revoke an invite by document id.
+ *
+ * @returns `true` if the update succeeded.
+ */
 export async function revokeInvite(id: string): Promise<boolean> {
   const db = getDb();
   if (!db) return false;
-  await db.collection(COLLECTION).doc(id).update({ revoked: true });
-  return true;
+  try {
+    await db.collection(COLLECTION).doc(id).update({ revoked: true });
+    return true;
+  } catch (err) {
+    log.error("invite.revoke_failed", { err, inviteId: id });
+    return false;
+  }
 }
 
 export type InviteSummary = {
@@ -132,21 +175,32 @@ export type InviteSummary = {
   expiresAt: string | null;
 };
 
-/** All invites, newest first — for the admin tool. */
+/**
+ * Invites newest-first for the admin tool (bounded read).
+ */
 export async function listInvites(): Promise<InviteSummary[]> {
   const db = getDb();
   if (!db) return [];
-  const snap = await db.collection(COLLECTION).orderBy("createdAt", "desc").get();
-  return snap.docs.map((d) => {
-    const v = d.data() as InviteDoc;
-    return {
-      id: d.id,
-      label: v.label,
-      accessCount: v.accessCount || 0,
-      revoked: !!v.revoked,
-      createdAt: v.createdAt,
-      lastAccessAt: v.lastAccessAt ?? null,
-      expiresAt: v.expiresAt ?? null,
-    };
-  });
+  try {
+    const snap = await db
+      .collection(COLLECTION)
+      .orderBy("createdAt", "desc")
+      .limit(LIST_LIMIT)
+      .get();
+    return snap.docs.map((d) => {
+      const v = d.data() as InviteDoc;
+      return {
+        id: d.id,
+        label: v.label,
+        accessCount: v.accessCount || 0,
+        revoked: !!v.revoked,
+        createdAt: v.createdAt,
+        lastAccessAt: v.lastAccessAt ?? null,
+        expiresAt: v.expiresAt ?? null,
+      };
+    });
+  } catch (err) {
+    log.error("invite.list_failed", { err });
+    return [];
+  }
 }

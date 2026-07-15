@@ -6,6 +6,7 @@ import {
   sessionCookieOptions,
 } from "@/lib/session";
 import { publicOrigin } from "@/lib/request";
+import { log, correlationId } from "@/lib/log";
 
 /*
   Access-gate endpoint.
@@ -52,7 +53,11 @@ function redirectTo(request: NextRequest, path: string): NextResponse {
   return NextResponse.redirect(new URL(path, publicOrigin(request)));
 }
 
+/**
+ * POST /api/access — typed unlock (lock-page form).
+ */
 export async function POST(request: NextRequest) {
+  const cid = correlationId();
   const ip = clientIp(request);
   if (isRateLimited(ip)) {
     return NextResponse.json(
@@ -76,8 +81,24 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const result = await verifyCode(code, ip);
+  let result;
+  try {
+    result = await verifyCode(code, ip);
+  } catch (err) {
+    log.error("access.verify_uncaught", { cid, err });
+    return NextResponse.json(
+      { ok: false, error: "Temporarily unavailable. Please try again." },
+      { status: 503 },
+    );
+  }
+
   if (!result.ok) {
+    if (result.reason === "unavailable") {
+      return NextResponse.json(
+        { ok: false, error: "Temporarily unavailable. Please try again." },
+        { status: 503 },
+      );
+    }
     return NextResponse.json(
       { ok: false, error: "That access code isn't valid." },
       { status: 401 },
@@ -89,7 +110,11 @@ export async function POST(request: NextRequest) {
   return res;
 }
 
+/**
+ * GET /api/access — one-click invite (?c=CODE), used by the shared team link.
+ */
 export async function GET(request: NextRequest) {
+  const cid = correlationId();
   const ip = clientIp(request);
   const code = request.nextUrl.searchParams.get("c") || "";
   const nextParam = request.nextUrl.searchParams.get("next") || "/";
@@ -101,8 +126,22 @@ export async function GET(request: NextRequest) {
     return redirectTo(request, "/locked");
   }
 
-  const result = await verifyCode(code, ip);
+  let result;
+  try {
+    result = await verifyCode(code, ip);
+  } catch (err) {
+    log.error("access.verify_uncaught", { cid, err });
+    return new NextResponse("Temporarily unavailable. Please try again.", {
+      status: 503,
+    });
+  }
+
   if (!result.ok) {
+    if (result.reason === "unavailable") {
+      return new NextResponse("Temporarily unavailable. Please try again.", {
+        status: 503,
+      });
+    }
     return redirectTo(request, "/locked?e=1");
   }
 

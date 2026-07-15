@@ -59,8 +59,8 @@ Next.js 16 App Router · React 19 · TypeScript · Tailwind v4 (`@theme` in `glo
 - User asked for full project onboarding + standing rules + persistent memory.
 - Standing stance expanded: disagree on PRD/SRS/brand/Mel–Ronnie conflicts **and** propose industry-best alternatives (research when needed) with clear trade-offs.
 - **Shipped 2026-07-15** (`b905acd`): Be Considered fade; nav Apply; ?c= when gate off; Secure cookies prod-only.
-- **Shipped 2026-07-15** (team link fix): `/api/access` redirects used `request.url` → `https://0.0.0.0:8080/` on App Hosting. Fixed via `publicOrigin()` + `SITE_ORIGIN=https://lilimd.ai`. `/apply` form + public gate unchanged — `?c=` remains team/invite one-click only.
-- Next: wait for review / further tasks; do not push/commit unless asked.
+- **Shipped 2026-07-15** (team link): `publicOrigin()` + `SITE_ORIGIN` so `?c=` no longer redirects to `0.0.0.0:8080`.
+- **Shipped 2026-07-15** (Firebase standards): invite verify try/catch + 503, logged access-count catch, `FieldValue.increment`, list `.limit(100)`.
 
 ## Claude memory (longer-form)
 `~/.claude/projects/-Users-niralimehta-lili-md-website/memory/MEMORY.md` and siblings.

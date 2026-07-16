@@ -62,10 +62,19 @@ export default function ApplyPage() {
           --line: rgba(215, 169, 141, 0.26);
           --line-strong: rgba(215, 169, 141, 0.45);
           --field-bg: rgba(255, 255, 255, 0.022);
+          /* Fluid vertical rhythm — keeps the whole page inside 100dvh on desktop. */
+          --pad-y: clamp(12px, 2.4vh, 52px);
+          --pad-x: clamp(20px, 3.5vw, 56px);
+          --gap: clamp(6px, 1.1vh, 12px);
+          --field-pad-y: clamp(10px, 1.7vh, 18px);
+          --field-pad-x: clamp(14px, 1.6vw, 22px);
+          --title: clamp(38px, 6.2vh, 66px);
           font-family: var(--font-montserrat), -apple-system, BlinkMacSystemFont, sans-serif;
           color: var(--mauve);
           background: var(--plum);
-          min-height: 100vh;
+          height: 100dvh;
+          max-height: 100dvh;
+          overflow: hidden;
           display: flex;
           -webkit-font-smoothing: antialiased;
         }
@@ -73,21 +82,32 @@ export default function ApplyPage() {
           flex: 0 0 42%;
           position: relative;
           overflow: hidden;
+          min-height: 0;
+          align-self: stretch;
+        }
+        .apply-page .visual :global(img) {
+          object-fit: cover;
+          object-position: center center;
         }
         .apply-page .panel {
           flex: 1;
-          min-height: 100vh;
+          min-width: 0;
+          min-height: 0;
+          height: 100%;
           display: flex;
           flex-direction: column;
-          padding: 52px 56px 34px;
+          padding: var(--pad-y) var(--pad-x) clamp(10px, 2vh, 34px);
           background: radial-gradient(130% 100% at 62% 40%, #26101d 0%, var(--plum) 70%);
+          overflow: hidden;
         }
         .apply-page .center {
           flex: 1;
+          min-height: 0;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 24px 0;
+          padding: clamp(4px, 1.2vh, 24px) 0;
+          overflow: hidden;
         }
         .apply-page .card {
           width: 100%;
@@ -96,38 +116,42 @@ export default function ApplyPage() {
         .apply-page .mark {
           display: flex;
           justify-content: center;
-          margin-bottom: 24px;
+          margin-bottom: clamp(10px, 2vh, 24px);
+        }
+        .apply-page .mark :global(img) {
+          width: clamp(44px, 6vh, 60px) !important;
+          height: auto !important;
         }
         .apply-page h1 {
           font-family: var(--font-cormorant), Georgia, serif;
           font-weight: 600;
-          font-size: 66px;
+          font-size: var(--title);
           letter-spacing: 0.005em;
           color: var(--rose);
           text-align: center;
           line-height: 1;
-          margin-bottom: 20px;
+          margin-bottom: clamp(8px, 1.6vh, 20px);
         }
         .apply-page .intro {
           text-align: center;
-          font-size: 12px;
+          font-size: clamp(10px, 1.35vh, 12px);
           font-weight: 500;
           letter-spacing: 0.16em;
-          line-height: 1.9;
+          line-height: 1.6;
           text-transform: uppercase;
           color: var(--mauve);
           max-width: 460px;
-          margin: 0 auto 32px;
+          margin: 0 auto clamp(12px, 2.4vh, 32px);
         }
         .apply-page .form {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: var(--gap);
         }
         .apply-page .row {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 12px;
+          gap: var(--gap);
         }
         .apply-page input,
         .apply-page select {
@@ -135,10 +159,10 @@ export default function ApplyPage() {
           background: var(--field-bg);
           border: 1px solid var(--line);
           border-radius: 11px;
-          padding: 18px 22px;
+          padding: var(--field-pad-y) var(--field-pad-x);
           color: #f4eaee;
           font-family: inherit;
-          font-size: 13px;
+          font-size: clamp(11px, 1.45vh, 13px);
           font-weight: 500;
           letter-spacing: 0.12em;
           transition:
@@ -199,12 +223,12 @@ export default function ApplyPage() {
           display: flex;
           gap: 12px;
           align-items: flex-start;
-          margin: 8px 2px 4px;
+          margin: clamp(4px, 0.8vh, 8px) 2px clamp(2px, 0.5vh, 4px);
           padding: 4px 2px;
           border-radius: 6px;
-          font-size: 11px;
+          font-size: clamp(10px, 1.25vh, 11px);
           font-weight: 400;
-          line-height: 1.6;
+          line-height: 1.45;
           color: var(--mauve);
           letter-spacing: 0.03em;
           cursor: pointer;
@@ -242,14 +266,14 @@ export default function ApplyPage() {
         }
         .apply-page button.submit {
           width: 100%;
-          margin-top: 10px;
+          margin-top: clamp(4px, 1vh, 10px);
           background: linear-gradient(120deg, #eac6b1 0%, #d9a889 55%, #e7bfa6 100%);
           color: #2b1420;
           border: none;
           border-radius: 11px;
-          padding: 21px;
+          padding: clamp(12px, 2vh, 21px);
           font-family: inherit;
-          font-size: 13px;
+          font-size: clamp(11px, 1.45vh, 13px);
           letter-spacing: 0.26em;
           font-weight: 600;
           text-transform: uppercase;
@@ -270,18 +294,18 @@ export default function ApplyPage() {
         }
         .apply-page .fineprint {
           text-align: center;
-          font-size: 10.5px;
+          font-size: clamp(9.5px, 1.2vh, 10.5px);
           font-weight: 400;
           letter-spacing: 0.04em;
           color: var(--rose-soft);
           opacity: 0.7;
-          margin-top: 14px;
+          margin-top: clamp(6px, 1.2vh, 14px);
         }
         .apply-page .err {
           text-align: center;
           font-size: 12px;
           color: #f0a4a4;
-          margin-top: 10px;
+          margin-top: clamp(6px, 1vh, 10px);
           letter-spacing: 0.04em;
         }
         .apply-page .panelfoot {
@@ -292,8 +316,8 @@ export default function ApplyPage() {
           background: var(--line);
         }
         .apply-page .panelfoot .foot {
-          margin-top: 22px;
-          font-size: 11.5px;
+          margin-top: clamp(10px, 2vh, 22px);
+          font-size: clamp(10px, 1.3vh, 11.5px);
           letter-spacing: 0.26em;
           font-weight: 500;
           color: var(--rose-soft);
@@ -302,12 +326,12 @@ export default function ApplyPage() {
         }
         .apply-page .success {
           text-align: center;
-          padding: 24px 0;
+          padding: clamp(12px, 2vh, 24px) 0;
         }
         .apply-page .success h2 {
           font-family: var(--font-cormorant), Georgia, serif;
           font-weight: 600;
-          font-size: 40px;
+          font-size: clamp(28px, 4.5vh, 40px);
           color: var(--rose);
           margin-bottom: 14px;
         }
@@ -320,24 +344,83 @@ export default function ApplyPage() {
           margin: 0 auto;
           letter-spacing: 0.02em;
         }
+        /* Extra-short desktop windows (laptop + browser chrome). */
+        @media (min-width: 901px) and (max-height: 780px) {
+          .apply-page {
+            --pad-y: 10px;
+            --gap: 5px;
+            --field-pad-y: 9px;
+            --title: 36px;
+          }
+          .apply-page .intro {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 10px;
+            line-height: 1.45;
+          }
+          .apply-page .consent-label {
+            font-size: 9.5px;
+            line-height: 1.35;
+          }
+          .apply-page .panelfoot .foot {
+            margin-top: 8px;
+          }
+        }
+
+        /* Mobile: allow vertical scroll for the form; fix image cut-off.
+           Gateway art is portrait (1090×1443) — a short 300px strip cropped
+           it badly. Use a taller full-bleed band + cover so the frame fills. */
         @media (max-width: 900px) {
           .apply-page {
+            height: auto;
+            max-height: none;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            overflow-y: auto;
             flex-direction: column;
           }
           .apply-page .visual {
             flex: none;
             width: 100%;
-            height: 300px;
+            /* Taller than before so portrait art isn't harshly cropped. */
+            height: min(48dvh, 420px);
+            min-height: 240px;
+          }
+          .apply-page .visual :global(img) {
+            object-fit: cover;
+            /* Bias toward the upper subject so the marina/sky isn't the only crop. */
+            object-position: center 28%;
           }
           .apply-page .panel {
-            min-height: auto;
-            padding: 44px 24px 30px;
+            height: auto;
+            min-height: 0;
+            overflow: visible;
+            padding: 36px 24px 28px;
+          }
+          .apply-page .center {
+            overflow: visible;
+            padding: 8px 0 16px;
           }
           .apply-page .row {
             grid-template-columns: 1fr;
           }
           .apply-page h1 {
-            font-size: 50px;
+            font-size: clamp(40px, 10vw, 50px);
+          }
+          .apply-page .intro {
+            font-size: 12px;
+            margin-bottom: 24px;
+          }
+          .apply-page input,
+          .apply-page select {
+            font-size: 13px;
+            padding: 16px 18px;
+          }
+          .apply-page button.submit {
+            padding: 18px;
+            font-size: 13px;
           }
         }
       `}</style>
@@ -349,7 +432,7 @@ export default function ApplyPage() {
           fill
           priority
           sizes="(max-width: 900px) 100vw, 42vw"
-          className="object-cover object-center"
+          className="object-cover"
         />
       </div>
 
@@ -402,7 +485,6 @@ export default function ApplyPage() {
                   </div>
                   <input
                     type="text"
-                    required
                     maxLength={200}
                     value={practiceName}
                     onChange={(e) => setPracticeName(e.target.value)}
@@ -445,7 +527,6 @@ export default function ApplyPage() {
                   <div className="row">
                     <input
                       type="text"
-                      required
                       maxLength={200}
                       value={licenseNo}
                       onChange={(e) => setLicenseNo(e.target.value)}
@@ -456,13 +537,12 @@ export default function ApplyPage() {
                     />
                     <div className="select-wrap">
                       <select
-                        required
                         value={ehr}
                         onChange={(e) => setEhr(e.target.value)}
                         aria-label={apply.fields.ehrPlaceholder}
                         className={ehr ? "filled" : ""}
                       >
-                        <option value="" disabled>
+                        <option value="">
                           {apply.fields.ehrPlaceholder}
                         </option>
                         {apply.ehrOptions.map((opt) => (

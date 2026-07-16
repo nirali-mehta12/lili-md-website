@@ -13,9 +13,10 @@ for **The Private Club at LiLi M.D.**, the founding-10 physician cohort of
 LiLi M.D.'s AI-native practice-operations platform.
 
 **One-liner:** the private door to the private club — every visitor lands
-on the `/apply` info form, provides their name / practice / license / EHR
-+ TCPA consent, and is granted access. Once inside, they see the pitch and
-can raise their hand to formally be considered as a founding member.
+on the `/apply` info form, provides their name / phone / email (+ optional
+practice / license / EHR) + TCPA consent, and is granted access. Once inside,
+they see the pitch and can raise their hand to formally be considered as a
+founding member.
 
 > **Note (2026-07-07):** the site previously had a second entry — a
 > `/locked` password page for Mel's personal invites. That flow is
@@ -77,8 +78,9 @@ Site is not built for scale.
   (Previously there were two entries — the `/locked` password gate is
   paused as of 2026-07-07; code preserved for future restoration.)
 - **G3** — Capture founding-member applications with enough structured
-  information (name, practice, license, EHR, phone, email, referrer) that
-  Mel can triage without needing a discovery call for every inquiry.
+  information (name, phone, email; optional practice / license / EHR /
+  referrer) that Mel can triage without needing a discovery call for every
+  inquiry.
 - **G4** — Notify Mel and the admin team by email when a new doctor
   applies or a landing-page lead is submitted.
 - **G5** — Provide Mel with a lightweight admin tool to mint / list /

@@ -194,14 +194,13 @@ export async function POST(request: NextRequest) {
   const consent = body.consent === true;
 
   // 3. Required-field validation -----------------------------------------
+  // Required: first name, last name, phone, email (+ TCPA consent below).
+  // Optional: practice, website, license, EHR, referred-by.
   if (
     !application.firstName ||
     !application.lastName ||
-    !application.practiceName ||
     !application.phone ||
-    !application.email ||
-    !application.licenseNo ||
-    !application.ehr
+    !application.email
   ) {
     return NextResponse.json(
       { ok: false, error: apply.errors.missingFields },
@@ -220,7 +219,8 @@ export async function POST(request: NextRequest) {
       { status: 400 },
     );
   }
-  if (!EHR_WHITELIST.has(application.ehr)) {
+  // EHR is optional; when provided it must be on Mel's whitelist.
+  if (application.ehr && !EHR_WHITELIST.has(application.ehr)) {
     log.warn("apply.ehr_not_whitelisted", { cid, ip, ehr: application.ehr });
     return NextResponse.json(
       { ok: false, error: apply.errors.invalidEhr },
@@ -243,7 +243,9 @@ export async function POST(request: NextRequest) {
   }
 
   const fullName = `${application.firstName} ${application.lastName}`.trim();
-  const label = `${fullName} · ${application.practiceName}`;
+  const label = application.practiceName
+    ? `${fullName} · ${application.practiceName}`
+    : fullName;
   log.info("apply.request_received", {
     cid,
     ip,

@@ -61,6 +61,7 @@ Next.js 16 App Router · React 19 · TypeScript · Tailwind v4 (`@theme` in `glo
 - **Shipped 2026-07-15** (`b905acd`): Be Considered fade; nav Apply; ?c= when gate off; Secure cookies prod-only.
 - **Shipped 2026-07-15** (team link): `publicOrigin()` + `SITE_ORIGIN` so `?c=` no longer redirects to `0.0.0.0:8080`.
 - **Shipped 2026-07-15** (Firebase standards): invite verify try/catch + 503, logged access-count catch, `FieldValue.increment`, list `.limit(100)`.
+- **Shipped 2026-07-16:** `/apply` required = first/last/phone/email (+ consent); optional practice/license/EHR. Desktop `100dvh` no vertical scroll; mobile taller full-bleed gateway image.
 
 ## Claude memory (longer-form)
 `~/.claude/projects/-Users-niralimehta-lili-md-website/memory/MEMORY.md` and siblings.

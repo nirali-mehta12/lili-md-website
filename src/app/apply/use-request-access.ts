@@ -79,10 +79,8 @@ export function useRequestAccess() {
       setError(apply.errors.invalidPhone);
       return;
     }
-    if (!payload.practiceName.trim() || !payload.licenseNo.trim() || !payload.ehr) {
-      setError(apply.errors.missingFields);
-      return;
-    }
+    // Practice / website / license / EHR / referred-by are optional.
+    // Consent remains required (TCPA).
     if (!payload.consent) {
       setError(apply.errors.missingConsent);
       return;

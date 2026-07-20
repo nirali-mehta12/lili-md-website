@@ -351,8 +351,9 @@ export const submit = {
   ctaSent: "Request Sent",
   ctaPending: "Sending…",
   successMessage:
-    "Request received. If your candidacy advances, we will be in touch to arrange an introduction.",
-  note: "This club is invitation only",
+    "Thank you for your interest. Your request has been received. We’ll be in touch personally to continue the conversation.",
+  // Rendered uppercase via CSS next to the lock glyph in SubmitForm.
+  note: "This club is by invitation only",
   errorGeneric: "Something went wrong. Please try again.",
   errorNetwork: "Network error. Please try again.",
 

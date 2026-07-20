@@ -42,10 +42,11 @@ receives a lead notification.
 | **Gate** | The authentication mechanism that hides the site from uninvited visitors |
 | **Invite** | A hashed access code stored in Firestore that unlocks the gate for one visitor |
 | **Session** | A signed cookie (`lili_access`) that carries authentication across requests, valid for 7 days |
-| **Lead** | A landing-page "Submit Your Practice" form submission from an already-inside visitor |
+| **Lead / consideration** | A landing-page **"Be Considered"** click (`POST /api/consider`) from an already-authenticated visitor |
 | **Application** | A `/apply` form submission from an outreach doctor entering the site |
-| **INSTANT mode** | `/apply` submissions are immediately granted access (current default) |
-| **MANUAL mode** | `/apply` submissions require Mel to review + send a personal invite link |
+| **INSTANT mode** | `/apply` submissions are immediately granted access (current default; Mel locked 2026-07-06) |
+| **MANUAL mode** | `/apply` submissions require Mel to review + send a personal invite link (not active) |
+| **Team one-click** | Shared `/?c=CODE` invite link that mints a session without `/apply` |
 
 ### 1.4 References
 
@@ -64,32 +65,33 @@ receives a lead notification.
 lilimd.ai is a **standalone marketing site**, deliberately not part of the
 main LiLi M.D. product app. It exists to introduce the "Private Club" —
 the founding-10 physician cohort — to prospective members and investors.
-Every visitor must be either explicitly invited (password) or self-verify
-their credentials (`/apply` form).
+Every visitor must either complete `/apply` or arrive via a valid
+one-click invite (`?c=CODE`). The `/locked` password UI is paused.
 
 The site is single-page, mobile-first, and animation-light. Persistence
-is Firestore; email is direct SMTP; hosting is Firebase App Hosting on
-GCP. All service accounts are keyless (ADC).
+is Firestore; email is direct SMTP (Gmail Workspace); hosting is Firebase
+App Hosting on GCP. All service accounts are keyless (ADC).
 
 ### 2.2 Product functions (summary)
 
 - **F1 — Marketing content delivery:** render 13 designed sections that
   communicate the LiLi M.D. value proposition.
-- **F2 — Invitation-only access gate:** deny unauthenticated visitors,
-  redirect them to a lock page.
+- **F2 — Invitation-only access gate:** deny unauthenticated visitors;
+  rewrite them to `/apply`.
 - **F3 — Password entry (personal invites) — PAUSED 2026-07-07:** flow
-  preserved in code (`src/app/locked/*`, `src/app/api/access/*`,
-  `src/lib/invites.ts`, `/admin` tool) but no longer wired into the
-  visitor gate. `/apply` is the sole entry point now. Restore by
-  reverting the commented block in `src/proxy.ts`.
-- **F4 — Info-form entry (outreach doctors):** collect verifying info,
-  persist it, notify admin, issue a session cookie.
-- **F5 — Landing-page lead capture:** collect + persist practice-submission
-  form + notify admin.
-- **F6 — Admin invite management:** allow Mel to create / list / revoke
-  invite codes with a password-protected tool.
-- **F7 — Health + monitoring:** expose an uptime probe endpoint and emit
-  structured logs consumable by Cloud Logging + Error Reporting.
+  preserved in code but not wired into the visitor gate.
+- **F3b — Team one-click (`?c=CODE`) — LIVE:** validates invite via
+  `/api/access`, sets session, redirects to public origin (`SITE_ORIGIN`
+  / forwarded host — never Cloud Run `0.0.0.0`).
+- **F4 — Info-form entry (`/apply`):** collect verifying info (required:
+  name, phone, email + consent), persist, notify admin, issue session.
+- **F5 — Landing "Be Considered":** authenticated visitor clicks CTA →
+  `POST /api/consider` → admin notification email (looks up their
+  `doctor-applications` record). Legacy `/api/submit` form kept in repo
+  but not used by the UI.
+- **F6 — Admin invite management:** Mel creates / lists / revokes codes.
+- **F7 — Health + monitoring:** `/api/health` + structured logs +
+  `app-events` dual-write.
 
 ### 2.3 User classes
 
@@ -135,9 +137,9 @@ GCP. All service accounts are keyless (ADC).
 
 | Screen | Path | Purpose |
 |---|---|---|
-| Landing page | `/` | 13-section marketing content + inline lead-capture form |
-| Lock page | `/locked` | Password entry with emblem + marina photo |
-| Apply page | `/apply` | 9-field doctor info form + TCPA consent |
+| Landing page | `/` | 13-section marketing content + **"Be Considered"** CTA |
+| Lock page | `/locked` | Password entry (UI preserved; **paused** in visitor flow) |
+| Apply page | `/apply` | Doctor info form + TCPA consent (desktop fits `100dvh`) |
 | Admin | `/admin` | Password-gated invite management |
 
 All screens MUST match the designer references in `docs/` and use the
@@ -178,8 +180,8 @@ uses its own rose/mauve palette per designer spec).
 - **FR-2.3** [MUST] Invalid or missing cookie SHALL cause the response to be rewritten to `/apply` with the URL preserved. *(Was `/locked` prior to 2026-07-07.)*
 - **FR-2.4** [MUST] Gated responses SHALL carry `Cache-Control: private, no-store, must-revalidate` to prevent CDN caching one visitor's rendered output for another.
 - **FR-2.5** [MUST] The gated home page SHALL be `export const dynamic = "force-dynamic"`.
-- **FR-2.6** *(PAUSED 2026-07-07)* `?c=CODE` one-click invite handling is commented out in `src/proxy.ts` alongside the password gate. Preserved to restore later.
-- **FR-2.7** [SHOULD] Session TTL SHALL be 7 days — currently only `/apply` issues sessions (`/locked` password flow is paused).
+- **FR-2.6** [MUST] `?c=CODE` one-click invite handling SHALL always run in `src/proxy.ts` (even when the gate is off for local DX). It redirects to `GET /api/access?c=…&next=…`, which sets the session cookie and redirects to the **public site origin** (from `x-forwarded-host` / `SITE_ORIGIN=https://lilimd.ai`) — never the container listen address.
+- **FR-2.7** [SHOULD] Session TTL SHALL be 7 days. Sessions are issued by `/apply` (Instant) and by `/api/access` (one-click / password when active).
 
 ### FR-3 — Password entry (`/locked`) — **PAUSED 2026-07-07**
 
@@ -202,18 +204,23 @@ so the flow can be restored by reverting the pause block in `src/proxy.ts`.*
 - **FR-4.4** [MUST] Every text field SHALL be capped at 200 chars; the URL field at 500 chars. Oversize inputs SHALL return HTTP 400.
 - **FR-4.5** [MUST] When `ehr` is non-empty, it SHALL be validated against `apply.ehrOptions`. Non-whitelist values SHALL return HTTP 400. Empty `ehr` is allowed (optional field).
 - **FR-4.6** [MUST] `consent === true` SHALL be validated server-side and persisted as `consent: true, consentAt: <ISO>` on the Firestore doc. Server SHALL reject with HTTP 400 if false or missing.
-- **FR-4.7** [MUST] On success the endpoint SHALL: persist the application to `doctor-applications`, mint an invite via `createInvite`, AWAIT the admin notification email (a **short one-liner** per Mel's answer C, 2026-07-06 — `[Gate] <Name> · <Practice>` subject + a 1-line body pointing to Firestore for the full record), and set the session cookie.
+- **FR-4.7** [MUST] On success the endpoint SHALL: persist the application to `doctor-applications` (with `inviteId` linkage), mint an invite via `createInvite`, AWAIT the admin notification email (**full detail** — every submitted field), and set the session cookie.
 - **FR-4.8** [MUST] Endpoint SHALL rate-limit per client IP: 6 attempts per 10-minute sliding window.
 - **FR-4.9** [MUST] An already-authenticated visitor submitting `/apply` SHALL receive `{ok:true, alreadyAuthenticated:true}` without creating a duplicate invite or duplicate notification email.
 - **FR-4.10** [MUST] If `createInvite` returns `null` (Firestore unreachable or misconfigured), endpoint SHALL respond HTTP 503 with a friendly message and NOT set the session cookie.
+- **FR-4.11** [SHOULD] On desktop viewports (≥901px wide) the `/apply` page SHALL fit within `100dvh` without a vertical scrollbar (fluid spacing via `clamp()`).
 
-### FR-5 — Lead capture (`/api/submit`)
+### FR-5 — Landing "Be Considered" (`/api/consider`)
 
-- **FR-5.1** [MUST] The landing form SHALL collect: Name, Practice Name, Email, Phone, Practice Website, Medical License No., Current EHR, Referred By, Message. Medical License / EHR / Referred By are optional so investors (non-physicians) can still submit; they exist for consistency with the `/apply` gate form (per designer Ronnie, 2026-07-06).
-- **FR-5.2** [MUST] Server SHALL validate email format + honeypot field ("company") + rate-limit before persisting.
-- **FR-5.3** [MUST] On success the endpoint SHALL persist to `leads` + await the full admin notification email.
-- **FR-5.4** [SHOULD] When SMTP is not configured, endpoint SHALL still return 200 (record persists) and log at WARN level.
-- **FR-5.5** [MUST] Notification email SHALL be the **full detailed** template (Mel's answer C, 2026-07-06) — includes every field the doctor submitted.
+*UI: `SubmitForm.tsx` — single CTA. Legacy multi-field `/api/submit` remains in the repo for possible restore but is not wired to the landing UI.*
+
+- **FR-5.1** [MUST] The landing contact section SHALL present a **"Be Considered"** button (copy in `submit.*` in `content.ts`), not a multi-field practice form.
+- **FR-5.2** [MUST] `POST /api/consider` SHALL require a valid `lili_access` session cookie; unauthenticated callers SHALL receive HTTP 401.
+- **FR-5.3** [MUST] On success the endpoint SHALL look up the visitor's `doctor-applications` record (by `inviteId` from the session) and AWAIT a full-detail admin notification email for the consideration request.
+- **FR-5.4** [MUST] Endpoint SHALL rate-limit per client IP (deliberately low; one-shot intent).
+- **FR-5.5** [MUST] Success UI copy SHALL match `submit.successMessage` in `content.ts` (warm confirmation — not admissions/"candidacy" language).
+- **FR-5.6** [MUST] The invitation note SHALL match `submit.note` ("This club is by invitation only"), rendered with the lock glyph.
+- **FR-5.7** [SHOULD] Legacy `POST /api/submit` (honeypot + `leads` collection) MAY remain deployed for restore; it is not required for the current visitor journey.
 
 ### FR-6 — Admin tool (`/admin`)
 
@@ -360,8 +367,9 @@ above are implemented. Not authoritative if it conflicts with §4–§6.*
                 │   Next.js 16 (App Router) │
                 │                           │
                 │   proxy.ts (gate)         │
-                │   ├─ /locked  (password)  │
                 │   ├─ /apply   (info form) │
+                │   ├─ /?c=     (team link) │
+                │   ├─ /locked  (paused)    │
                 │   ├─ /admin   (mel tool)  │
                 │   ├─ /api/*   (server)    │
                 │   └─ /        (landing)   │
@@ -447,11 +455,12 @@ Suggested manual acceptance checklist before a production deploy:
 
 1. `npm run build` passes (typecheck + build).
 2. `curl http://localhost:3000/api/health` returns `{ok:true}`.
-3. Screenshot `/`, `/locked`, `/apply` at desktop + iphone14pro viewports.
-4. Submit each form once with valid data → verify Firestore doc created + admin email arrives.
-5. Submit each form once with invalid data → verify 400 with the exact error string from `content.ts`.
-6. Rate-limit probe: rapid-fire 20 requests → verify 429 kicks in.
-7. Live smoke against production: `npm run smoke-test` for a fresh code, log in to lilimd.ai, submit a test lead, confirm end-to-end.
+3. Screenshot `/`, `/apply` at desktop + iphone14pro (confirm `/apply` desktop has no vertical scroll).
+4. Submit `/apply` with required fields only → Firestore `doctor-applications` + admin email + session.
+5. With session, click **Be Considered** → admin consideration email; success copy matches `content.ts`.
+6. One-click: `https://lilimd.ai/?c=<CODE>` → lands on `/` (Location must be lilimd.ai, not `0.0.0.0`).
+7. Rate-limit probe on `/api/apply` / `/api/consider` → verify 429.
+8. Live smoke: `npm run smoke-test`, open local + prod one-click URLs from CLI output.
 
 ---
 
@@ -497,6 +506,7 @@ Edit `apphosting.yaml`, flip `ACCESS_GATE_ENABLED` to `"true"` or `"false"`, com
 | 1.2 | 2026-07-07 | Password gate (`/locked`) **paused** — code preserved but no longer wired into the visitor flow. `/apply` is the sole gateway. FR-3.* marked "when active". FR-2.2 / FR-2.3 / FR-2.6 updated. F3 in overview marked paused. Landing-page CTA is scheduled to change to a "Click to be considered" button when Ronnie's design lands — that will introduce a second alert type. `/apply` gate email upgraded from one-liner to full-detail (still triggered on every gate submission). | Nirali + AI |
 | 1.3 | 2026-07-07 | Added `NFR-OBS-5`: structured logger now dual-writes WARN+ entries to Firestore `app-events` so ops can inspect errors without a gcloud reauth. Added §6.3 `app-events` data model. Also added shared US phone / email format validation (client + server) — bad phones and emails are now rejected with a 400 on both `/apply` and the landing form. | Nirali + AI |
 | 1.4 | 2026-07-16 | FR-4.1 / FR-4.5: `/apply` required fields narrowed to first name, last name, phone, email (+ consent). Practice, website, license, EHR, referred-by are optional. | Nirali + AI |
+| 1.5 | 2026-07-20 | Full doc sync to production: FR-2.6 `?c=` LIVE; FR-4.7 full-detail gate email; FR-5 rewritten for Be Considered (`/api/consider`); FR-4.11 desktop no-scroll; definitions + F5 updated. | Nirali + AI |
 
 ---
 

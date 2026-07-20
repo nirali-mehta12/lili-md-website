@@ -13,11 +13,12 @@
 ## 1. What this site is (lilimd.ai — the reference instance)
 
 - **Audience:** invitation-only — prospective founding-member physicians + investors.
-- **Goal:** lead capture. Visitors submit "Submit Your Practice" form → stored
-  in Firestore + emailed to `admin@lilisolutions.ai`.
+- **Goal:** gated pitch + interest capture. Physicians enter via `/apply`;
+  inside, **"Be Considered"** notifies admin@. Team uses a shared `?c=` link.
 - **Shape:** single-page, 13 sections, mobile-first responsive, scroll-reveal
   animation, gold-on-wine luxury aesthetic.
-- **Built from:** a fixed Canva design (only content was expected to change after launch).
+- **Built from:** Ronnie’s Canva + page HTML references, rebuilt in Next.js
+  (not a third-party theme template). See PRD/SRS for current behavior.
 
 If your next site fits that shape — single page, designer-led aesthetic, form
 submissions, custom domain — the recipe in this doc applies.

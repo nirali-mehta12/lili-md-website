@@ -11,16 +11,16 @@ Standalone invitation-only marketing site for **The Private Club at LiLi M.D.** 
 - **Repo:** https://github.com/nirali-mehta12/lili-md-website · local `~/lili-md-website`
 - **Owner:** Nirali · stakeholders Mel (CEO), Dr. John Yee (CMO), Ronnie (designer)
 
-## Authoritative docs (read these; CLAUDE.md status block is STALE as of 2026-06-17)
+## Authoritative docs (synced 2026-07-20 to production)
 | Doc | Role |
 |-----|------|
-| `docs/PRD.md` | Product intent, milestones, recent Mel/Ronnie decisions |
+| `docs/PRD.md` | Product intent, milestones, Mel/Ronnie decisions |
 | `docs/SRS.md` | Engineering requirements (FR/NFR), data model, runbook |
 | `docs/WEBSITE-PLAYBOOK.md` | Recipe for future marketing sites |
-| `docs/LiLi_MD_Brand_Guidelines.html` (+ `.pdf`) | Canonical brand (ask if page HTML diverges) |
+| `docs/LiLi_MD_Brand_Guidelines.html` (+ `.pdf`) | Canonical brand |
 | `docs/lili-md-access-gate-page2.html` | `/apply` designer reference |
-| `ACCESS_GATE.md` | Gate overview — partially stale (says OFF/UI remaining) |
-| `CLAUDE.md` | Stack + file map useful; **"Next steps" outdated** |
+| `ACCESS_GATE.md` | Gate / invites / team `?c=` |
+| `CLAUDE.md` / `README.md` | Repo status + quick start |
 
 ## Stack
 Next.js 16 App Router · React 19 · TypeScript · Tailwind v4 (`@theme` in `globals.css`) · Firebase Admin (Firestore, keyless ADC) · nodemailer → Gmail SMTP · App Hosting auto-deploy on `main`.
@@ -62,6 +62,7 @@ Next.js 16 App Router · React 19 · TypeScript · Tailwind v4 (`@theme` in `glo
 - **Shipped 2026-07-15** (team link): `publicOrigin()` + `SITE_ORIGIN` so `?c=` no longer redirects to `0.0.0.0:8080`.
 - **Shipped 2026-07-15** (Firebase standards): invite verify try/catch + 503, logged access-count catch, `FieldValue.increment`, list `.limit(100)`.
 - **Shipped 2026-07-16:** `/apply` required = first/last/phone/email (+ consent); optional practice/license/EHR. Desktop `100dvh` no vertical scroll; mobile taller full-bleed gateway image.
+- **Docs synced 2026-07-20:** PRD, SRS, CLAUDE.md, ACCESS_GATE.md, README, playbook §1 — verified against production behavior (Be Considered, team `?c=`, full-detail emails, Instant `/apply`).
 
 ## Claude memory (longer-form)
 `~/.claude/projects/-Users-niralimehta-lili-md-website/memory/MEMORY.md` and siblings.

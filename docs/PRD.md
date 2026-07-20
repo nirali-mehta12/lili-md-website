@@ -18,11 +18,12 @@ practice / license / EHR) + TCPA consent, and is granted access. Once inside,
 they see the pitch and can raise their hand to formally be considered as a
 founding member.
 
-> **Note (2026-07-07):** the site previously had a second entry — a
-> `/locked` password page for Mel's personal invites. That flow is
-> **paused** (code preserved, unwired) per Ronnie + Mel. `/apply` is the
-> sole gateway now. The password-page code stays in the repo so we can
-> restore it if needed — see `src/proxy.ts` for the pause point.
+> **Access model (verified 2026-07-20):** Physicians enter via `/apply`
+> (Instant access). Internal team/investors use a shared one-click
+> `https://lilimd.ai/?c=<CODE>` link (no form). The old `/locked`
+> password UI is **paused** (code preserved). Inside the site, doctors
+> raise their hand with the **"Be Considered"** button (`/api/consider`),
+> not a "Submit Your Practice" form.
 
 ### 1.1 Team & stakeholders
 
@@ -58,9 +59,10 @@ hard-to-target audience. LiLi M.D. needs:
 
 | Segment | Description | How they arrive | What they need |
 |---|---|---|---|
-| **Personal invitee** | A physician Mel personally identified. | Direct link to `/apply` from Mel. | Fast entry, feels handpicked. (Password path *paused* — was the previous flow.) |
+| **Personal invitee** | A physician Mel personally identified. | Direct link to `/apply` from Mel. | Fast entry, feels handpicked. (Password path *paused*.) |
 | **Outreach doctor** | A physician contacted via outbound campaign or referral. | Direct link to `/apply`. | Legible credibility signals, easy self-verification. |
-| **Investor** | Non-physician evaluating the LiLi M.D. thesis. | Direct link to `/apply` from Nirali / Mel. | Professional presentation, understands the business model. |
+| **Team / investor (internal)** | Mel, Ronnie, Dr. John Yee, investors reviewing the pitch. | Shared `?c=` one-click team link. | Skip `/apply`; land on the main site immediately. |
+| **Investor (via apply)** | Non-physician evaluating the thesis without a team code. | Direct link to `/apply`. | Professional presentation; optional practice fields. |
 
 Total addressable audience for this site is small (dozens to low hundreds).
 Site is not built for scale.
@@ -82,7 +84,7 @@ Site is not built for scale.
   referrer) that Mel can triage without needing a discovery call for every
   inquiry.
 - **G4** — Notify Mel and the admin team by email when a new doctor
-  applies or a landing-page lead is submitted.
+  submits `/apply` or clicks **"Be Considered"** on the landing page.
 - **G5** — Provide Mel with a lightweight admin tool to mint / list /
   revoke access codes without engineering involvement.
 
@@ -108,9 +110,9 @@ Site is not built for scale.
 - **US-2** As a physician viewing the site, I want to understand who the
   founding-10 are, what I get by joining, and how to formally apply — all
   from a single page.
-- **US-3** As a physician ready to apply, I want to submit my practice
-  details in a form that feels selective (not a generic contact form) and
-  receive confirmation that my submission was received.
+- **US-3** As a physician ready to raise my hand, I want a single
+  **"Be Considered"** action (my details already captured at `/apply`)
+  and clear confirmation that the request was received.
 
 ### Outreach doctor
 
@@ -135,7 +137,7 @@ Site is not built for scale.
 - **US-8** As Mel, I want to mint a new access code for a named prospect
   without going through engineering — self-serve via `/admin`.
 - **US-9** As Mel, I want to receive an email every time a doctor applies
-  via `/apply` or submits the landing-page form — with enough detail to
+  via `/apply` or clicks **"Be Considered"** — with enough detail to
   decide next steps from the inbox.
 - **US-10** As Mel, I want to revoke a leaked or expired invite code
   without touching Firestore directly.
@@ -158,8 +160,8 @@ Site is not built for scale.
   `/apply` (target: within 60 days of gate launch).
 - **B-M2** — Zero investor complaints about broken UX / typos / mobile
   layout issues on the site.
-- **B-M3** — Every landing-page "Submit Your Practice" form submission
-  reaches admin@lilisolutions.ai within 30 seconds of submission.
+- **B-M3** — Every landing-page **"Be Considered"** click reaches
+  admin@lilisolutions.ai within 30 seconds of the click.
 
 ### 6.2 Product
 
@@ -173,8 +175,8 @@ Site is not built for scale.
 
 - **O-M1** — 99.5% monthly uptime (App Hosting SLA is the ceiling).
 - **O-M2** — Zero secrets committed to git.
-- **O-M3** — Zero data-loss incidents involving `leads` or
-  `doctor-applications`.
+- **O-M3** — Zero data-loss incidents involving `doctor-applications`
+  (or legacy `leads` if `/api/submit` is restored).
 
 ---
 
@@ -189,9 +191,9 @@ Cross-referenced against the numbered SRS requirements for traceability.
 | ~~**P3**~~ | ~~Password entry for personal invites~~ **PAUSED 2026-07-07** — code preserved but not wired. | US-1 | FR-3 |
 | **P4** | Info-form entry — sole gateway now | US-4, US-5, US-6 | FR-4 |
 | **P5** | TCPA consent capture (SMS/email opt-in) | US-6 | FR-4.2, FR-4.6, NFR-COMP-1 |
-| **P6** | Landing-page "Submit Your Practice" lead capture | US-3 | FR-5 |
+| **P6** | Landing-page "Be Considered" CTA + admin email | US-3 | FR-5 |
 | **P7** | Admin tool for invite management | US-8, US-10 | FR-6 |
-| **P8** | Email notifications for every submission | US-9, US-11 | FR-4.7, FR-5.3 |
+| **P8** | Email notifications (`/apply` + Be Considered) | US-9, US-11 | FR-4.7, FR-5.3 |
 | **P9** | Uptime + error monitoring | US-12 | FR-7, NFR-OBS-* |
 | **P10** | Structured audit logging | US-11 | NFR-OBS-1..3 |
 
@@ -235,10 +237,11 @@ Cross-referenced against the numbered SRS requirements for traceability.
 | **M3 — Production deploy** | App Hosting live at lilimd.ai over HTTPS | ✅ Complete |
 | **M4 — /apply doctor gate** | Info-form entry with TCPA consent + hardening | ✅ Complete |
 | **M5 — Observability layer** | Structured logging + `/api/health` + monitoring alerts | ✅ Complete |
-| **M6 — Instant/manual mode decision** | Mel confirms `/apply` submissions grant access immediately or require review | ⏳ Pending Mel |
-| **M7 — First 10 founding applications** | 10 qualified `/apply` submissions received | ⏳ In progress |
-| **M8 — www subdomain** | `www.lilimd.ai` → `lilimd.ai` redirect | 🅾 Deferred (optional) |
-| **M9 — Automated tests** | Basic E2E coverage for gate + form flows | 🅾 Deferred (post-founding-10) |
+| **M6 — Instant/manual mode decision** | Mel confirms Instant access for `/apply` | ✅ Complete (Instant) |
+| **M7 — Be Considered CTA** | Landing form replaced with one-click CTA + email | ✅ Complete |
+| **M8 — First 10 founding applications** | 10 qualified `/apply` + Be Considered interest signals | ⏳ In progress |
+| **M9 — www subdomain** | `www.lilimd.ai` → `lilimd.ai` redirect | 🅾 Deferred (optional) |
+| **M10 — Automated tests** | Basic E2E coverage for gate + form flows | 🅾 Deferred (post-founding-10) |
 
 ---
 
@@ -255,48 +258,44 @@ Cross-referenced against the numbered SRS requirements for traceability.
 
 ---
 
-## 10.5 Recent design decisions (Ronnie + Mel, 2026-07-07)
+## 10.5 Design decisions (verified against production, 2026-07-20)
 
-- **Password gate paused.** `/locked` is no longer wired into the visitor
-  flow — `/apply` is the sole gateway for physicians. Files are preserved
-  in the repo so the flow can be restored later without a rebuild. See
-  `src/proxy.ts` block comment for the pause point.
+- **Password gate paused (2026-07-07).** `/locked` is not wired into the
+  visitor flow. Physicians use `/apply`. Code preserved for restore.
 
-- **Team access via ONE shared one-click link (2026-07-09).** The team +
-  internal stakeholders (Mel, Ronnie, Dr. John Yee, investors) don't need
-  to fill the /apply form. Instead, ONE invite code labeled `"Team"` is
-  minted via `node scripts/invite.mjs create "Team" 365`, and the
-  resulting `https://lilimd.ai/?c=<CODE>` link is shared with the
-  organization. The `?c=CODE` one-click handler in `src/proxy.ts`
-  validates the code and drops the visitor straight onto the main site —
-  no form, no password page. Trade-off (accepted by Nirali): no per-person
-  attribution, and if the link leaks the whole team's code has to be
-  rotated at once (mint a new one, revoke the old one via `/admin` or
-  `scripts/invite.mjs revoke <id>`).
-- **Landing-page CTA is changing** — currently a full "Submit Your Practice
-  for Qualification" form. Ronnie is sending updated design where this
-  becomes a simple **"Click to be considered"** button (since `/apply`
-  already captures the physician's info at the gate). Implementation
-  waits for Ronnie's design; the form stays as-is in the interim.
-- **Two email alerts** confirmed:
-  1. **Gate entry** (`/apply` submit) — already firing with full detail.
-  2. **"Click to be considered"** button — new alert to be wired when the
-     button lands.
+- **Team one-click `?c=` (2026-07-09, live).** Shared invite link
+  `https://lilimd.ai/?c=<CODE>` (e.g. label `"Team"`) skips `/apply`.
+  Handler always runs in `src/proxy.ts` → `/api/access` (redirects use
+  public origin / `SITE_ORIGIN`, not Cloud Run's `0.0.0.0`). Trade-off:
+  no per-person attribution; rotate the whole code if it leaks.
+
+- **Landing CTA = "Be Considered" (shipped).** One button →
+  `POST /api/consider` → admin email. Legacy `/api/submit` + form copy
+  kept in code for possible restore; UI does not use them.
+
+- **Two email alerts (live):**
+  1. **`/apply` gate** — full-detail notification to admin@.
+  2. **"Be Considered"** — consideration request email to admin@.
+
+- **`/apply` required fields (2026-07-16):** first name, last name,
+  phone, email + TCPA consent. Optional: practice, website, license,
+  EHR, referred-by. Desktop `/apply` fits `100dvh` (no vertical scroll).
+
+- **Contact copy (2026-07-20):** note = "This club is by invitation only";
+  Be Considered success =
+  "Thank you for your interest. Your request has been received. We'll be
+  in touch personally to continue the conversation."
 
 ## 11. Open questions
 
-- **Q1 (RESOLVED 2026-07-06)** — Instant vs Manual review for `/apply`?
-  **Mel: A (Instant).** Doctor submits the form → immediate access.
-  Implemented in `src/app/api/apply/route.ts` (setSession + 7-day cookie).
-- **Q2 (RESOLVED 2026-07-06)** — When does Mel get notified?
-  **Mel: C (Both).** Every `/apply` gate entry produces a short one-liner
-  email (`[Gate] <Name> · <Practice>`); every landing-page "Submit Your
-  Practice" form submission produces the full detailed email. Landing form
-  also captures Medical License / EHR / Referred By so both forms are
-  consistent.
-- **Q3 (Deferred)** — Sunset plan: when the 10 founding members are secured,
-  does this site go offline, transform into a member portal, or stay as an
-  investor reference? Deferred until milestone M7.
+- **Q1 (RESOLVED 2026-07-06)** — Instant vs Manual for `/apply`?
+  **Mel: Instant.** Implemented in `src/app/api/apply/route.ts`.
+- **Q2 (RESOLVED — updated 2026-07-20)** — Notification cadence?
+  **Both events, full detail:** every `/apply` submission and every
+  **"Be Considered"** click emails admin@ with doctor details (gate email
+  is full-detail, not a one-liner).
+- **Q3 (Deferred)** — Sunset plan after founding-10 secured. Deferred
+  until milestone M8.
 
 **Ronnie's note (2026-07-06):** the `/apply` page is *publicly accessible*
 (anyone with the URL can visit it) but is shared only via personal outreach
@@ -322,3 +321,4 @@ came from which campaign), we'd add a query-param token like
 | Version | Date | Change | Approver |
 |---|---|---|---|
 | 1.0 | 2026-07-06 | Initial PRD | Nirali (pending Mel/investor review) |
+| 1.1 | 2026-07-20 | Doc sync to production: Be Considered CTA live; team `?c=` live; `/apply` required fields; full-detail emails; Instant mode marked complete | Nirali |

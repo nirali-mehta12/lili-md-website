@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LiLi M.D. — Marketing Website (lilimd.ai)
 
-## Getting Started
+Invitation-only marketing + application site for **The Private Club at LiLi M.D.**
 
-First, run the development server:
+This is a **standalone** Next.js app (not the main LiLi product). Design rebuilt from Ronnie’s Canva / HTML references into Next.js 16 + Tailwind v4 + Firebase App Hosting.
+
+## Quick start
 
 ```bash
+npm install
+cp .env.example .env.local   # then fill FIREBASE_PROJECT_ID, SMTP, ACCESS_SESSION_SECRET, …
+gcloud auth application-default login   # local Firestore (keyless ADC)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 — with the gate off locally you see the landing page; enable `ACCESS_GATE_ENABLED=true` to exercise `/apply`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Docs (source of truth)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Doc | Purpose |
+|-----|---------|
+| [CLAUDE.md](./CLAUDE.md) | Repo status, file map, conventions |
+| [docs/PRD.md](./docs/PRD.md) | Product requirements |
+| [docs/SRS.md](./docs/SRS.md) | Software requirements |
+| [ACCESS_GATE.md](./ACCESS_GATE.md) | Gate, invites, team `?c=` link |
+| [docs/WEBSITE-PLAYBOOK.md](./docs/WEBSITE-PLAYBOOK.md) | Recipe for future marketing sites |
 
-## Learn More
+## Production
 
-To learn more about Next.js, take a look at the following resources:
+- **URL:** https://lilimd.ai  
+- **Deploy:** push to `main` → Firebase App Hosting auto-rollout (~5–10 min)  
+- **Never push to `main` without explicit approval**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Local development |
+| `npm run build` | Production build |
+| `npm run screenshot` | Playwright viewport screenshots |
+| `npm run smoke-test` | Mint a short-lived invite code |
